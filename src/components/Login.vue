@@ -7,7 +7,18 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { useRouter } from 'vue-router'
+import { ref } from 'vue'
+const router = useRouter()
+const username = ref('')
+const password = ref('')
+function goHome() {
+  router.push('/home')
+}
+</script>
+
+<!-- <script>
 export default {
   name: 'Login',
   data() {
@@ -22,4 +33,4 @@ export default {
     },
   },
 }
-</script>
+</script> -->

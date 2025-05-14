@@ -4,8 +4,8 @@ import Home from '../components/Home.vue'
 
 const routes = [
   { path: '/', redirect: '/login' },
-  { path: '/login', name: 'Login', component: Login },
-  { path: '/home', name: 'Home', component: Home },
+  { path: '/login', component: Login },
+  { path: '/home', component: Home },
 ]
 
 const router = createRouter({
