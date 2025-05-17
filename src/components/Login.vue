@@ -18,19 +18,3 @@ function goHome() {
 }
 </script>
 
-<!-- <script>
-export default {
-  name: 'Login',
-  data() {
-    return {
-      username: '',
-      password: '',
-    }
-  },
-  methods: {
-    goHome() {
-      this.$router.push('/home')
-    },
-  },
-}
-</script> -->
