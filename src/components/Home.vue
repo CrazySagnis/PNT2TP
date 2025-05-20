@@ -18,10 +18,19 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 
+const router = useRouter()
 const items = ref([])
 
 onMounted(async () => {
+  const usuario = JSON.parse(localStorage.getItem('usuarioActivo'))
+  if (!usuario) {
+    router.push('/login')
+    return
+  }
+
+  // Cargar datos si hay sesión válida
   try {
     const res = await fetch('https://www.mockachino.com/69b724dc-dd10-4e/lugar2')
     const data = await res.json()
@@ -31,4 +40,3 @@ onMounted(async () => {
   }
 })
 </script>
-
