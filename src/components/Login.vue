@@ -4,7 +4,7 @@
     <input v-model="username" placeholder="Usuario" />
     <input v-model="password" type="password" placeholder="Contraseña" />
     <button @click="goHome">Ir a Home</button>
-    <button @click="logIn">Iniciar Sesión</button>
+    <button @click="logIn">Iniciar Sesion</button>
     <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   </div>
 </template>
