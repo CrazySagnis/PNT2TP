@@ -4,7 +4,7 @@
     <input v-model="username" placeholder="Usuario" />
     <input v-model="password" type="password" placeholder="Contraseña" />
     <button @click="goHome">Ir a Home</button>
-    <button @click="logIn">Iniciar Sesion</button>
+    <button @click="logIn">Iniciar Sesión</button>
     <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
   </div>
 </template>
@@ -12,12 +12,15 @@
 <script setup>
 import { useRouter } from 'vue-router'
 import { ref } from 'vue'
+import { useUsuarioActivo } from '@/composables/useUsuarioActivo' 
 
 const router = useRouter()
 const username = ref('')
 const password = ref('')
 const errorMessage = ref('')
 const users = ref([])
+
+const { setUsuarioActivo } = useUsuarioActivo()
 
 function goHome() {
   router.push('/home')
@@ -35,8 +38,8 @@ async function logIn() {
     )
 
     if (user) {
+      setUsuarioActivo(user)
       router.push('/home')
-      localStorage.setItem('usuarioActivo', JSON.stringify(user))
     } else {
       errorMessage.value = 'Usuario o contraseña incorrectos'
     }

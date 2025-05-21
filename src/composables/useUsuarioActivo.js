@@ -1,21 +1,15 @@
-import { ref, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
-const usuarioActivo = ref(null)
+
+const usuarioActivo = ref(JSON.parse(localStorage.getItem('usuarioActivo')))
 
 export function useUsuarioActivo() {
   const router = useRouter()
 
-  onMounted(() => {
-    const guardado = localStorage.getItem('usuarioActivo')
-    if (guardado) {
-      usuarioActivo.value = JSON.parse(guardado)
-    }
-
-    window.addEventListener('storage', () => {
-      const nuevo = localStorage.getItem('usuarioActivo')
-      usuarioActivo.value = nuevo ? JSON.parse(nuevo) : null
-    })
+  window.addEventListener('storage', () => {
+    const nuevo = localStorage.getItem('usuarioActivo')
+    usuarioActivo.value = nuevo ? JSON.parse(nuevo) : null
   })
 
   function irAlLogin() {
@@ -28,8 +22,15 @@ export function useUsuarioActivo() {
     router.push('/login')
   }
 
+  
+  function setUsuarioActivo(usuario) {
+    usuarioActivo.value = usuario
+    localStorage.setItem('usuarioActivo', JSON.stringify(usuario))
+  }
+
   return {
     usuarioActivo,
+    setUsuarioActivo, 
     irAlLogin,
     logOut,
   }
