@@ -1,44 +1,44 @@
 <template>
-  <div>
-    <h2>Login</h2>
-    <input v-model="username" placeholder="Usuario" />
-    <input v-model="password" type="password" placeholder="Contraseña" />
-    <button @click="goHome">Ir a Home</button>
-    <button @click="logIn">Iniciar Sesión</button>
-    <p v-if="errorMessage" style="color: red">{{ errorMessage }}</p>
+  <div class="container mt-5" style="max-width: 400px">
+    <h2 class="mb-3">Iniciar Sesión</h2>
+
+    <input v-model="username" placeholder="Usuario" class="form-control mb-2" />
+    <input v-model="password" type="password" placeholder="Contraseña" class="form-control mb-3" />
+
+    <div class="d-grid gap-2 mb-3">
+      <button @click="logIn" class="btn btn-primary">Iniciar Sesión</button>
+    </div>
+
+    <p v-if="errorMessage" class="text-danger">{{ errorMessage }}</p>
   </div>
 </template>
 
 <script setup>
-import { useRouter } from 'vue-router'
 import { ref } from 'vue'
-import { useUsuarioActivo } from '@/composables/useUsuarioActivo' 
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/usuarioStore'
 
 const router = useRouter()
+const authStore = useAuthStore()
+
 const username = ref('')
 const password = ref('')
 const errorMessage = ref('')
-const users = ref([])
-
-const { setUsuarioActivo } = useUsuarioActivo()
-
-function goHome() {
-  router.push('/home')
-}
 
 async function logIn() {
   errorMessage.value = ''
   try {
     const response = await fetch('https://www.mockachino.com/69b724dc-dd10-4e/users')
     const data = await response.json()
-    users.value = data.users
 
-    const user = users.value.find(
-      (u) => u.username === username.value && u.password === password.value,
+    const user = data.users.find(
+      (u) =>
+        u.username === username.value.trim() &&
+        u.password === password.value.trim()
     )
 
     if (user) {
-      setUsuarioActivo(user)
+      authStore.setUsuario(user)
       router.push('/home')
     } else {
       errorMessage.value = 'Usuario o contraseña incorrectos'
@@ -49,3 +49,4 @@ async function logIn() {
   }
 }
 </script>
+<style scoped></style>

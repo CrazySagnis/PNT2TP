@@ -5,14 +5,15 @@
       <button
         class="navbar-toggler"
         type="button"
-        data-toggle="collapse"
-        data-target="#navbarNav"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNav"
         aria-controls="navbarNav"
         aria-expanded="false"
         aria-label="Toggle navigation"
       >
         <span class="navbar-toggler-icon"></span>
       </button>
+
       <div class="collapse navbar-collapse" id="navbarNav">
         <ul class="navbar-nav me-auto mb-2 mb-lg-0">
           <li class="nav-item active">
@@ -29,7 +30,7 @@
               href="#"
               id="navbarDropdown"
               role="button"
-              data-toggle="dropdown"
+              data-bs-toggle="dropdown"
               aria-haspopup="true"
               aria-expanded="false"
             >
@@ -59,10 +60,18 @@
         </ul>
 
         <div class="d-flex">
-          <button v-show="usuarioActivo" class="btn btn-outline-danger" @click="logOut">
+          <button
+            v-if="authStore.isAuthenticated"
+            class="btn btn-outline-danger"
+            @click="cerrarSesion"
+          >
             Cerrar Sesión
           </button>
-          <button v-show="!usuarioActivo" class="btn btn-outline-primary" @click="irAlLogin">
+          <button
+            v-else
+            class="btn btn-outline-primary"
+            @click="router.push('/login')"
+          >
             Iniciar Sesión
           </button>
         </div>
@@ -72,7 +81,14 @@
 </template>
 
 <script setup>
-import { useUsuarioActivo } from '@/composables/useUsuarioActivo'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/usuarioStore'
 
-const { usuarioActivo, logOut, irAlLogin } = useUsuarioActivo()
+const authStore = useAuthStore()
+const router = useRouter()
+
+function cerrarSesion() {
+  authStore.logout()
+  router.push('/login')
+}
 </script>
