@@ -30,9 +30,10 @@
               <p class="card-text text-muted small flex-grow-1">
                 {{ item.descripcion }}
               </p>
-             <router-link :to="{ name: 'Details', query: { id: item.id } }" class="btn btn-primary mt-3">
-                   Ver más
+             <router-link :to="{ name: 'Details', params: { id: item.id } }" class="btn btn-primary mt-3">
+                Ver más
               </router-link>
+
             </div>
 
             <transition name="fade">

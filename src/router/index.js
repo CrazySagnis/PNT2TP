@@ -7,7 +7,9 @@
     { path: '/', redirect: '/login' },
     { path: '/login', component: Login },
     { path: '/home', component: Home },
-    { path: '/details', name: 'Details', component: Details }
+    { path: '/details/:id', name: 'Details', component: Details }
+
+
 
 
   ]
