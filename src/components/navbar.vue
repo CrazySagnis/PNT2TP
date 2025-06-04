@@ -49,10 +49,11 @@
           <li class="nav-item d-flex align-items-center">
             <form class="d-flex">
               <input
+                v-model="searchStore.query"
                 class="form-control me-2"
                 type="search"
-                placeholder="Search"
-                aria-label="Search"
+                placeholder="Buscar producto"
+                aria-label="Buscar"
               />
               <button class="btn btn-outline-success" type="submit">Search</button>
             </form>
@@ -67,11 +68,7 @@
           >
             Cerrar Sesión
           </button>
-          <button
-            v-else
-            class="btn btn-outline-primary"
-            @click="router.push('/login')"
-          >
+          <button v-else class="btn btn-outline-primary" @click="router.push('/login')">
             Iniciar Sesión
           </button>
         </div>
@@ -81,6 +78,8 @@
 </template>
 
 <script setup>
+import { useSearchStore } from '@/stores/searchStore'
+const searchStore = useSearchStore()
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/usuarioStore'
 

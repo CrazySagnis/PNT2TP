@@ -1,21 +1,14 @@
 <template>
   <div class="container my-5">
-    <h2 class="text-center fw-bold mb-5">
-      🛒 <span style="font-size: 1.6rem">Productos</span>
-    </h2>
+    <h2 class="text-center fw-bold mb-5">🛒 <span style="font-size: 1.6rem">Productos</span></h2>
 
     <div v-for="(grupo, modelo) in items" :key="modelo" class="mb-5">
       <h3 class="text-center">{{ modelo }}</h3>
 
       <div class="row g-4 justify-content-center">
-        <div
-          class="col-12 col-sm-6 col-lg-4"
-          v-for="item in grupo"
-          :key="item.id"
-        >
+        <div class="col-12 col-sm-6 col-lg-4" v-for="item in grupoFiltrado(grupo)" :key="item.id">
           <div
             class="card h-100 shadow-sm rounded-4 position-relative cursor-pointer product-card"
-
             @click="mostrarBoton(item.id)"
           >
             <img
@@ -30,10 +23,17 @@
               <p class="card-text text-muted small flex-grow-1">
                 {{ item.descripcion }}
               </p>
-             <router-link :to="{ name: 'Details', params: { id: item.id } }" class="btn btn-primary mt-3">
-                Ver más
-              </router-link>
 
+              <div class="d-flex flex-column gap-2 mt-3">
+                <router-link
+                  :to="{ name: 'Details', params: { id: item.id } }"
+                  class="btn btn-primary"
+                >
+                  Ver más
+                </router-link>
+                <button class="btn btn-success">Comprar</button>
+                <button class="btn btn-outline-secondary">Añadir al carrito</button>
+              </div>
             </div>
 
             <transition name="fade">
@@ -53,6 +53,8 @@
 </template>
 
 <script setup>
+import { useSearchStore } from '@/stores/searchStore'
+const searchStore = useSearchStore()
 import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/usuarioStore'
@@ -104,6 +106,12 @@ function mostrarBoton(id) {
   setTimeout(() => {
     productoEnPruebaId.value = null
   }, 2000)
+}
+
+function grupoFiltrado(grupo) {
+  if (!searchStore.query) return grupo
+  const q = searchStore.query.toLowerCase()
+  return grupo.filter((item) => item.modelo.toLowerCase().includes(q))
 }
 </script>
 
