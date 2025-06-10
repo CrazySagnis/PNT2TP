@@ -26,6 +26,12 @@
         </li>
       </ul>
 
+      <!-- GRÁFICO -->
+      <div class="mt-5" v-if="chartSeries[0].data.length > 0">
+        <h4 class="fw-bold mb-3 text-center">Historial de Precios</h4>
+        <apex-chart type="line" height="350" :options="chartOptions" :series="chartSeries" />
+      </div>
+
       <button class="btn btn-secondary mt-4" @click="router.back()">Volver</button>
     </div>
   </div>
@@ -37,16 +43,34 @@
 </template>
 
 <script setup>
-import { useRoute, useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import ApexChart from 'vue3-apexcharts'
+
+const producto = ref(null)
+const chartSeries = ref([{ name: 'Precio ARS', data: [] }])
+const chartOptions = ref({
+  chart: {
+    id: 'historial-precios',
+  },
+  xaxis: {
+    categories: [],
+    title: { text: 'Fecha' },
+  },
+  yaxis: {
+    title: { text: 'Precio ARS' },
+  },
+  stroke: {
+    curve: 'smooth',
+  },
+  colors: ['#007bff'],
+})
 
 const route = useRoute()
 const router = useRouter()
-const producto = ref(null)
 
 onMounted(async () => {
   const id = route.params.id
-
   if (!id) {
     router.push('/home')
     return
@@ -65,14 +89,25 @@ onMounted(async () => {
       const match = data.PlacaVideo9070Xt.find((p) => p.id === id)
       if (match) {
         producto.value = match
+        //busca historial de precios y lo guarda
+        if (match.historial_precios && Array.isArray(match.historial_precios)) {
+          chartOptions.value.xaxis.categories = match.historial_precios.map((p) => p.fecha)
+          //carga los valores de los precios en las fechas
+          chartSeries.value = [
+            {
+              name: 'Precio ARS',
+              data: match.historial_precios.map((p) => p.precio),
+            },
+          ]
+        }
+
         return
       }
-    } catch (error) {
-      console.error(`Error buscando en ${url}`, error)
+    } catch (err) {
+      console.error(`Error buscando en ${url}`, err)
     }
   }
 
-  // Si no encontró nada
   router.push('/home')
 })
 </script>
