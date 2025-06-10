@@ -54,14 +54,15 @@
 
 <script setup>
 import { useSearchStore } from '@/stores/searchStore'
-const searchStore = useSearchStore()
-import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/usuarioStore'
+import { ref, onMounted, computed } from 'vue'
 
-const router = useRouter()
+const searchStore = useSearchStore()
 const authStore = useAuthStore()
 const usuario = authStore.usuario
+const router = useRouter()
+
 const items = ref({})
 const productoEnPruebaId = ref(null)
 
@@ -101,18 +102,20 @@ onMounted(async () => {
   items.value = grouped
 })
 
-function mostrarBoton(id) {
+const mostrarBoton = (id) => {
   productoEnPruebaId.value = id
   setTimeout(() => {
     productoEnPruebaId.value = null
   }, 2000)
 }
 
-function grupoFiltrado(grupo) {
-  if (!searchStore.query) return grupo
-  const q = searchStore.query.toLowerCase()
-  return grupo.filter((item) => item.modelo.toLowerCase().includes(q))
-}
+const grupoFiltrado = computed(() => {
+  const q = searchStore.query?.toLowerCase() || ''
+  return (grupo) => {
+    if (!q) return grupo
+    return grupo.filter((item) => item.modelo.toLowerCase().includes(q))
+  }
+})
 </script>
 
 <style scoped>
@@ -125,6 +128,6 @@ function grupoFiltrado(grupo) {
 }
 
 .product-card:hover {
-  border: 2px solid #dc3545; /* rojo Bootstrap */
+  border: 2px solid #dc3545;
 }
 </style>

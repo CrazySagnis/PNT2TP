@@ -62,7 +62,7 @@ onMounted(async () => {
     try {
       const res = await fetch(url)
       const data = await res.json()
-      const match = data.PlacaVideo9070Xt.find(p => p.id === id)
+      const match = data.PlacaVideo9070Xt.find((p) => p.id === id)
       if (match) {
         producto.value = match
         return

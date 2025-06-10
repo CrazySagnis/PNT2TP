@@ -61,11 +61,7 @@
         </ul>
 
         <div class="d-flex">
-          <button
-            v-if="authStore.isAuthenticated"
-            class="btn btn-outline-danger"
-            @click="cerrarSesion"
-          >
+          <button v-if="estaAutenticado" class="btn btn-outline-danger" @click="cerrarSesion">
             Cerrar Sesión
           </button>
           <button v-else class="btn btn-outline-primary" @click="router.push('/login')">
@@ -79,12 +75,15 @@
 
 <script setup>
 import { useSearchStore } from '@/stores/searchStore'
-const searchStore = useSearchStore()
+import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/usuarioStore'
 
+const searchStore = useSearchStore()
 const authStore = useAuthStore()
 const router = useRouter()
+
+const estaAutenticado = computed(() => authStore.isAuthenticated)
 
 function cerrarSesion() {
   authStore.logout()
