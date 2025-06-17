@@ -40,9 +40,9 @@
               <router-link class="dropdown-item" to="/action">Action</router-link>
               <router-link class="dropdown-item" to="/another-action">Another action</router-link>
               <div class="dropdown-divider"></div>
-              <router-link class="dropdown-item" to="/something-else"
-                >Something else here</router-link
-              >
+              <router-link class="dropdown-item" to="/something-else">
+                Something else here
+              </router-link>
             </div>
           </li>
 
@@ -60,7 +60,14 @@
           </li>
         </ul>
 
-        <div class="d-flex">
+        <div class="d-flex gap-2">
+          <button
+            v-if="puedeVerBoton"
+            class="btn btn-warning"
+            @click="alert('Sos admin!')"
+          >
+            Admin Button
+          </button>
           <button v-if="estaAutenticado" class="btn btn-outline-danger" @click="cerrarSesion">
             Cerrar Sesión
           </button>
@@ -84,6 +91,10 @@ const authStore = useAuthStore()
 const router = useRouter()
 
 const estaAutenticado = computed(() => authStore.isAuthenticated)
+
+const puedeVerBoton = computed(() => {
+  return authStore.usuario && authStore.usuario.rol !== 'limitado'
+})
 
 function cerrarSesion() {
   authStore.logout()

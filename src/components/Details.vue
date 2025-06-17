@@ -10,7 +10,7 @@
       <h2 class="fw-bold">{{ producto.nombre }}</h2>
       <p class="text-muted">{{ producto.descripcion }}</p>
 
-      <!-- Tabla de precios actuales -->
+  
       <div class="mt-5">
         <h4 class="fw-bold mb-3 text-center">Precios actuales por tienda</h4>
         <table class="table table-bordered">
@@ -54,7 +54,7 @@
 
 <script setup>
 import { ref, onMounted } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { useRoute,  useRouter } from 'vue-router'
 import ApexChart from 'vue3-apexcharts'
 
 const producto = ref(null)

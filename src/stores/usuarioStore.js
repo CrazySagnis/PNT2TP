@@ -19,6 +19,10 @@ export const useAuthStore = defineStore('auth', {
       this.usuario = null
       this.isAuthenticated = false
       localStorage.removeItem('usuario')
+    },
+
+    tieneAccesoADetalle: function () {
+      return this.usuario && this.usuario.rol !== 'limitado'
     }
   }
 })
