@@ -78,9 +78,8 @@ import 'swiper/css'
 import 'swiper/css/navigation'
 
 
-const router = useRouter()
-const authStore = useAuthStore()
 const searchStore = useSearchStore()
+const authStore = useAuthStore()
 const usuario = authStore.usuario
 
 const productosPorTipo = ref({})
@@ -120,7 +119,7 @@ onMounted(async () => {
   }
 })
 
-function mostrarBoton(id) {
+const mostrarBoton = (id) => {
   productoEnPruebaId.value = id
   setTimeout(() => {
     productoEnPruebaId.value = null
