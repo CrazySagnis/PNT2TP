@@ -7,28 +7,38 @@
         alt="imagen"
         style="max-height: 300px; object-fit: contain"
       />
-      <h2 class="fw-bold">{{ producto.modelo }}</h2>
-      <p class="text-success fw-semibold fs-4">$ {{ producto.precio_ars }}</p>
+      <h2 class="fw-bold">{{ producto.nombre }}</h2>
       <p class="text-muted">{{ producto.descripcion }}</p>
 
-      <ul class="list-group list-group-flush mt-3">
-        <li class="list-group-item"><strong>Marca:</strong> {{ producto.marca }}</li>
-        <li class="list-group-item"><strong>Memoria:</strong> {{ producto.memoria }}</li>
-        <li class="list-group-item"><strong>Frecuencia:</strong> {{ producto.frecuencia }}</li>
-        <li class="list-group-item"><strong>Stock:</strong> {{ producto.stock }}</li>
-        <li class="list-group-item"><strong>Cuotas:</strong> {{ producto.cuotas }}</li>
-        <li class="list-group-item"><strong>Envío:</strong> {{ producto.envio }}</li>
-        <li class="list-group-item">
-          <strong>RGB:</strong>
-          <span :class="producto.rgb ? 'text-success' : 'text-danger'">
-            {{ producto.rgb ? 'Sí' : 'No' }}
-          </span>
-        </li>
-      </ul>
+      <!-- Tabla de precios actuales -->
+      <div class="mt-5">
+        <h4 class="fw-bold mb-3 text-center">Precios actuales por tienda</h4>
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th>Tienda</th>
+              <th>Precio</th>
+              <th>Ir al sitio</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="r in registrosProducto" :key="r.id">
+
+              <td>{{ r.tienda }}</td>
+              <td class="fw-bold text-success">$ {{ r.precio.toLocaleString() }}</td>
+              <td>
+                <a :href="r.link_producto" target="_blank" class="btn btn-outline-primary btn-sm">
+                  Ver producto
+                </a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
 
       <!-- GRÁFICO -->
-      <div class="mt-5" v-if="chartSeries[0].data.length > 0">
-        <h4 class="fw-bold mb-3 text-center">Historial de Precios</h4>
+      <div class="mt-5" v-if="chartSeries.length">
+        <h4 class="fw-bold mb-3 text-center">Historial de Precios por Tienda</h4>
         <apex-chart
           type="line"
           height="350"
@@ -47,72 +57,83 @@
   </div>
 </template>
 
-    <script setup>
-    import { ref, onMounted } from 'vue'
-    import { useRoute, useRouter } from 'vue-router'
-    import ApexChart from 'vue3-apexcharts'
+<script setup>
+import { ref, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
+import ApexChart from 'vue3-apexcharts'
 
-    const producto = ref(null)
-    const chartSeries = ref([{ name: 'Precio ARS', data: [] }])
-    const chartOptions = ref({
-    chart: {
-        id: 'historial-precios'
-    },
-    xaxis: {
-        categories: [],
-        title: { text: 'Fecha' }
-    },
-    yaxis: {
-        title: { text: 'Precio ARS' }
-    },
-    stroke: {
-        curve: 'smooth'
-    },
-    colors: ['#007bff']
-    })
+const producto = ref(null)
+const registrosProducto = ref([])
+const chartSeries = ref([])
+const chartOptions = ref({
+  chart: { id: 'historial-precios' },
+  xaxis: {
+    categories: [],
+    title: { text: 'Fecha' }
+  },
+  yaxis: { title: { text: 'Precio ARS' } },
+  stroke: { curve: 'smooth' },
+  colors: ['#007bff', '#28a745', '#dc3545', '#ffc107']
+})
 
-    const route = useRoute()
-    const router = useRouter()
+const route = useRoute()
+const router = useRouter()
 
-    onMounted(async () => {
-    const id = route.params.id
-    if (!id) {
-        router.push('/home')
-        return
-    }
-
-    const urls = [
-        'https://www.mockachino.com/69b724dc-dd10-4e/lugar1',
-        'https://www.mockachino.com/69b724dc-dd10-4e/lugar2',
-        'https://www.mockachino.com/69b724dc-dd10-4e/lugar3'
-    ]
-
-    for (const url of urls) {
-        try {
-        const res = await fetch(url)
-        const data = await res.json()
-        const match = data.PlacaVideo9070Xt.find(p => p.id === id)
-        if (match) {
-            producto.value = match
-            //busca historial de precios y lo guarda
-            if (match.historial_precios && Array.isArray(match.historial_precios)) {
-            chartOptions.value.xaxis.categories = match.historial_precios.map(p => p.fecha)
-            //carga los valores de los precios en las fechas
-            chartSeries.value = [
-                {
-                name: 'Precio ARS',
-                data: match.historial_precios.map(p => p.precio)
-                }
-            ]
-            }
-
-            return
-        }
-        } catch (err) {
-        console.error(`Error buscando en ${url}`, err)
-        }
-    }
-
+onMounted(async () => {
+  const id = route.params.id
+  if (!id) {
     router.push('/home')
+    return
+  }
+
+  try {
+    const resProducto = await fetch(`https://684b6f8ded2578be881b5940.mockapi.io/comparador/productos/productos/${id}`)
+    producto.value = await resProducto.json()
+
+    const resRegistros = await fetch(`https://684b6f8ded2578be881b5940.mockapi.io/comparador/productos/registros`)
+    const todosRegistros = await resRegistros.json()
+
+    // Filtrar solo registros del producto actual
+    const registrosFiltrados = todosRegistros.filter(r => r.productoid === id.toString())
+
+    // Mostrar solo el precio más reciente por tienda en la tabla
+    const ultimosPorTienda = {}
+    registrosFiltrados.forEach(r => {
+      const actual = ultimosPorTienda[r.tienda]
+      if (!actual || new Date(r.fecha) > new Date(actual.fecha)) {
+        ultimosPorTienda[r.tienda] = r
+      }
     })
-    </script>
+    registrosProducto.value = Object.values(ultimosPorTienda)
+
+    // Preparar datos para el gráfico
+    const seriesPorTienda = {}
+    const categoriasSet = new Set()
+
+    registrosFiltrados.forEach(r => {
+      if (!seriesPorTienda[r.tienda]) {
+        seriesPorTienda[r.tienda] = []
+      }
+      seriesPorTienda[r.tienda].push({ fecha: r.fecha, precio: r.precio })
+      categoriasSet.add(r.fecha)
+    })
+
+    // Ordenar fechas y completar series
+    const fechasOrdenadas = Array.from(categoriasSet).sort((a, b) => new Date(a) - new Date(b))
+
+    chartSeries.value = Object.entries(seriesPorTienda).map(([tienda, valores]) => {
+      const mapaPorFecha = {}
+      valores.forEach(v => {
+        mapaPorFecha[v.fecha] = v.precio
+      })
+      const data = fechasOrdenadas.map(f => mapaPorFecha[f] ?? null)
+      return { name: tienda, data }
+    })
+
+    chartOptions.value.xaxis.categories = fechasOrdenadas
+  } catch (err) {
+    console.error('Error al cargar el producto o registros', err)
+    router.push('/home')
+  }
+})
+</script>
