@@ -1,6 +1,7 @@
 <template>
+  <!-- BANNER -->
   <div class="banner-swiper" v-if="!searchStore.query">
-    <swiper :modules="[Navigation, Autoplay]" :slides-per-view="1" navigation autoplay loop>
+    <swiper slides-per-view="1" navigation autoplay loop>
       <swiper-slide>
         <img
           :src="bannerASUS"
@@ -20,6 +21,7 @@
     </swiper>
   </div>
 
+  <!-- TÍTULO -->
   <div class="container my-5">
     <h2
       class="text-center fw-bold mb-5"
@@ -31,7 +33,7 @@
       🛒 <span style="font-size: 1.6rem; color: #ffc107">Productos</span>
     </h2>
 
-    <!-- Si hay productos -->
+    <!-- SI HAY PRODUCTOS -->
     <template v-if="Object.keys(productosStore.productosFiltradosPorCategoria).length > 0">
       <template v-for="(grupo, tipo) in productosStore.productosFiltradosPorCategoria" :key="tipo">
         <div class="mb-5" :id="tipo">
@@ -39,17 +41,16 @@
 
           <div class="position-relative">
             <swiper
-              :modules="[Navigation]"
-              :slides-per-view="3"
-              :space-between="20"
+              slides-per-view="3"
+              space-between="20"
               navigation
               class="product-swiper"
             >
-              <swiper-slide v-for="item in grupo" :key="item.id">
-                <div
-                  class="card h-100 shadow-sm rounded-4 position-relative cursor-pointer product-card"
-                  @click="mostrarBoton(item.id)"
-                >
+              <swiper-slide
+                v-for="item in grupoFiltrado(grupo)"
+                :key="item.id"
+              >
+                <div class="card h-100 shadow-sm rounded-4 position-relative product-card">
                   <img
                     :src="item.imagen"
                     class="card-img-top p-3"
@@ -73,18 +74,14 @@
                         Ver más
                       </router-link>
                       <button class="btn btn-success">Comprar</button>
-                      <button class="btn btn-outline-secondary">Añadir al carrito</button>
+                      <button
+                        class="btn btn-outline-secondary"
+                        @click.stop="abrirModalCarrito(item)"
+                      >
+                        Añadir al carrito
+                      </button>
                     </div>
                   </div>
-                  <transition name="fade">
-                    <div
-                      v-if="productoEnPruebaId === item.id"
-                      class="btn btn-warning position-absolute top-50 start-50 translate-middle fw-bold shadow"
-                      style="z-index: 10"
-                    >
-                      PROBANDO
-                    </div>
-                  </transition>
                 </div>
               </swiper-slide>
             </swiper>
@@ -93,34 +90,95 @@
       </template>
     </template>
 
-    <!-- Si no hay resultados -->
+    <!-- NO HAY RESULTADOS -->
     <template v-else>
       <div class="alert alert-warning text-center fw-bold fs-5">
         No se encontraron productos que coincidan con la búsqueda.
       </div>
     </template>
+
+    <!-- MODAL -->
+    <div
+      class="modal fade"
+      tabindex="-1"
+      :class="{ show: mostrarModalCarrito }"
+      style="display: block;"
+      v-if="mostrarModalCarrito"
+    >
+      <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title">Elegí tienda para {{ productoSeleccionado?.nombre }}</h5>
+            <button type="button" class="btn-close" @click="cerrarModalCarrito"></button>
+          </div>
+          <div class="modal-body">
+            <table class="table table-bordered">
+              <thead>
+                <tr>
+                  <th>Tienda</th>
+                  <th>Precio</th>
+                  <th>Link</th>
+                  <th></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr
+                  v-for="r in preciosActuales"
+                  :key="r.id"
+                >
+                  <td>{{ r.tienda }}</td>
+                  <td class="fw-bold text-success">$ {{ r.precio.toLocaleString() }}</td>
+                  <td>
+                    <a :href="r.linkProducto" target="_blank">Ver producto</a>
+                  </td>
+                  <td>
+                    <button class="btn btn-primary btn-sm" @click="agregarDesdeModal(r)">
+                      Añadir
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="modal-footer">
+            <button class="btn btn-secondary" @click="cerrarModalCarrito">Cerrar</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div
+      class="modal-backdrop fade show"
+      v-if="mostrarModalCarrito"
+    ></div>
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
+import { ref, computed, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
+import { useSearchStore } from '@/stores/searchStore'
 import { useAuthStore } from '@/stores/usuarioStore'
-import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Navigation, Autoplay } from 'swiper/modules'
 import { useProductosStore } from '@/stores/productosStore'
-import { useSearchStore } from '@/stores/searchStore' // 🚀 IMPORTANTE
+import { useCartStore } from '@/stores/cartStore'
+import { Swiper, SwiperSlide } from 'swiper/vue'
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/autoplay'
 
 import bannerASUS from '@/assets/banner/bannerASUS.png'
 import bannerMSI from '@/assets/banner/BannerMSI.png'
 
-import 'swiper/css'
-import 'swiper/css/navigation'
-
 const productosStore = useProductosStore()
+const router = useRouter()
+const cartStore = useCartStore()
+const searchStore = useSearchStore()
 const authStore = useAuthStore()
-const searchStore = useSearchStore() // 🚀 HAY QUE DEFINIRLO
 
 const productoEnPruebaId = ref(null)
+const productoSeleccionado = ref(null)
+const mostrarModalCarrito = ref(false)
+const preciosActuales = ref([])
 
 const mostrarBoton = (id) => {
   productoEnPruebaId.value = id
@@ -142,82 +200,48 @@ function mostrarPrecioMinimo(productoId) {
   return `$ ${precioMin.toLocaleString()}`
 }
 
-// 🚀 FUNCIÓN para setear la búsqueda desde el banner
+function grupoFiltrado(grupo) {
+  if (!searchStore.query) return grupo
+  const q = searchStore.query.toLowerCase()
+  return grupo.filter((item) => item.nombre.toLowerCase().includes(q))
+}
+
 function buscarMarca(marca) {
   searchStore.query = marca
 }
+
+function abrirModalCarrito(producto) {
+  productoSeleccionado.value = producto
+
+  const registrosFiltrados = productosStore.registros.filter(
+    (r) => r.productoid === producto.id.toString()
+  )
+  const ultimosPorTienda = {}
+  registrosFiltrados.forEach(r => {
+    const actual = ultimosPorTienda[r.tienda]
+    if (!actual || new Date(r.fecha) > new Date(actual.fecha)) {
+      ultimosPorTienda[r.tienda] = r
+    }
+  })
+  preciosActuales.value = Object.values(ultimosPorTienda)
+
+  mostrarModalCarrito.value = true
+}
+
+function agregarDesdeModal(registro) {
+  cartStore.agregarAlCarrito({
+    id: productoSeleccionado.value.id,
+    nombre: productoSeleccionado.value.nombre,
+    imagen: productoSeleccionado.value.imagen,
+    descripcion: productoSeleccionado.value.descripcion,
+    tienda: registro.tienda,
+    precio: registro.precio,
+    link: registro.linkProducto
+  })
+  mostrarModalCarrito.value = false
+}
+
+function cerrarModalCarrito() {
+  mostrarModalCarrito.value = false
+}
 </script>
-
-<style scoped>
-.cursor-pointer {
-  cursor: pointer;
-}
-.product-card {
-  transition: border 0.3s ease;
-}
-.product-card:hover {
-  border: 2px solid #dc3545;
-}
-
-.swiper-container-wrapper {
-  position: relative;
-  padding: 0 2rem;
-}
-
-.mySwiper {
-  overflow: visible;
-  padding: 0 2rem;
-}
-
-.swiper-button-next,
-.swiper-button-prev {
-  color: #007bff;
-  width: 40px;
-  height: 40px;
-  background-color: white;
-  border-radius: 50%;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  top: 50%;
-  transform: translateY(-50%);
-  z-index: 10;
-}
-
-.swiper-button-prev {
-  left: -20px;
-}
-
-.swiper-button-next {
-  right: -20px;
-}
-
-@media (max-width: 768px) {
-  .swiper-button-next,
-  .swiper-button-prev {
-    display: none;
-  }
-}
-
-.banner-swiper {
-  margin-top: 100px; /* para que no tape el navbar */
-  margin-bottom: 40px;
-  width: 90%;
-  margin-left: auto;
-  margin-right: auto;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
-}
-
-.banner-swiper img {
-  width: 100%;
-  height: 500px;
-}
-
-.mt-with-banner {
-  margin-top: 40px;
-}
-
-.mt-without-banner {
-  margin-top: 100px;
-}
-</style>

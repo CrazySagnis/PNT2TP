@@ -1,10 +1,43 @@
+<script setup>
+import { computed } from 'vue'
+import { useSearchStore } from '@/stores/searchStore'
+import { useRouter } from 'vue-router'
+import { useAuthStore } from '@/stores/usuarioStore'
+import { useProductosStore } from '@/stores/productosStore'
+import { useCartStore } from '@/stores/cartStore'
+import MeowWare32 from '@/assets/img/MeowWare32.png'
+
+const searchStore = useSearchStore()
+const authStore = useAuthStore()
+const productosStore = useProductosStore()
+const cartStore = useCartStore()
+const router = useRouter()
+
+const estaAutenticado = computed(() => authStore.isAuthenticated)
+
+const puedeVerBoton = computed(() => {
+  return authStore.usuario && authStore.usuario.rol !== 'limitado'
+})
+
+function seleccionarCategoria(categoria) {
+  productosStore.categoriaSeleccionada = categoria
+}
+
+function cerrarSesion() {
+  authStore.logout()
+  router.push('/login')
+}
+</script>
+
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-sm fixed-top">
     <div class="container-fluid">
+      <!-- LOGO -->
       <router-link class="navbar-brand fw-bold text-warning d-flex align-items-center" to="/home">
         <img :src="MeowWare32" alt="MeowWare Logo" class="navbar-logo me-2" />
       </router-link>
 
+      <!-- BOTÓN MOBILE -->
       <button
         class="navbar-toggler"
         type="button"
@@ -17,7 +50,9 @@
         <span class="navbar-toggler-icon"></span>
       </button>
 
+      <!-- CONTENIDO NAVBAR -->
       <div class="collapse navbar-collapse" id="navbarNav">
+        <!-- CATEGORÍAS + BUSCADOR -->
         <ul
           class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center gap-2"
           v-if="productosStore.productosCargados"
@@ -62,19 +97,44 @@
           </li>
         </ul>
 
-        <!-- Si los productos no cargaron aún -->
-        <div v-else class="navbar-text text-light me-auto">Cargando categorías...</div>
+        <!-- Si no hay productos aún -->
+        <div v-else class="navbar-text text-light me-auto">
+          Cargando categorías...
+        </div>
 
-        <!-- Botones Admin / Cerrar Sesión -->
+        <!-- CARRITO -->
+        <div class="d-flex align-items-center me-3">
+          <router-link to="/cart" class="btn btn-outline-primary position-relative">
+            🛒
+            <span
+              v-if="cartStore.items.length > 0"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger"
+            >
+              {{ cartStore.items.length }}
+            </span>
+          </router-link>
+        </div>
+
+        <!-- LOGIN / LOGOUT -->
         <div class="d-flex gap-2 ms-3">
+          <!-- Botón Admin (opcional) -->
           <button v-if="puedeVerBoton" class="btn btn-warning" @click="alert('Sos admin!')">
             Admin Button
           </button>
 
-          <button v-if="estaAutenticado" class="btn btn-outline-danger" @click="cerrarSesion">
+          <!-- Botón Cerrar sesión / Login -->
+          <button
+            v-if="estaAutenticado"
+            class="btn btn-outline-danger"
+            @click="cerrarSesion"
+          >
             Cerrar Sesión
           </button>
-          <button v-else class="btn btn-outline-primary" @click="router.push('/login')">
+          <button
+            v-else
+            class="btn btn-outline-primary"
+            @click="router.push('/login')"
+          >
             Iniciar Sesión
           </button>
         </div>
@@ -83,40 +143,11 @@
   </nav>
 </template>
 
-<script setup>
-import { useSearchStore } from '@/stores/searchStore'
-import { computed } from 'vue'
-import { useRouter } from 'vue-router'
-import { useAuthStore } from '@/stores/usuarioStore'
-import { useProductosStore } from '@/stores/productosStore'
-import MeowWare32 from '@/assets/img/MeowWare32.png'
-
-const searchStore = useSearchStore()
-const authStore = useAuthStore()
-const productosStore = useProductosStore()
-const router = useRouter()
-
-const estaAutenticado = computed(() => authStore.isAuthenticated)
-
-const puedeVerBoton = computed(() => {
-  return authStore.usuario && authStore.usuario.rol !== 'limitado'
-})
-
-function seleccionarCategoria(categoria) {
-  productosStore.categoriaSeleccionada = categoria
-}
-
-function cerrarSesion() {
-  authStore.logout()
-  router.push('/login')
-}
-</script>
-
 <style scoped>
 .navbar {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 999;
-  height: 64px; /* 🚀 Fijás altura de navbar */
+  height: 64px;
   padding: 0 1rem;
 }
 
@@ -151,12 +182,12 @@ function cerrarSesion() {
 .navbar-brand {
   display: flex;
   align-items: center;
-  height: 100%; /* 🚀 Que use toda la navbar */
+  height: 100%;
   overflow: hidden;
 }
 
 .navbar-logo {
-  height: 60px; /* 🚀 Le das el tamaño que quieras */
+  height: 60px;
   width: auto;
   object-fit: contain;
 }
