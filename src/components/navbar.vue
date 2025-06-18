@@ -1,7 +1,9 @@
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-sm fixed-top">
     <div class="container-fluid">
-      <router-link class="navbar-brand fw-bold text-warning" to="/home"> TechStore </router-link>
+      <router-link class="navbar-brand fw-bold text-warning d-flex align-items-center" to="/home">
+        <img :src="MeowWare32" alt="MeowWare Logo" class="navbar-logo me-2" />
+      </router-link>
 
       <button
         class="navbar-toggler"
@@ -87,6 +89,7 @@ import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/usuarioStore'
 import { useProductosStore } from '@/stores/productosStore'
+import MeowWare32 from '@/assets/img/MeowWare32.png'
 
 const searchStore = useSearchStore()
 const authStore = useAuthStore()
@@ -113,6 +116,8 @@ function cerrarSesion() {
 .navbar {
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   z-index: 999;
+  height: 64px; /* 🚀 Fijás altura de navbar */
+  padding: 0 1rem;
 }
 
 .navbar .btn {
@@ -141,5 +146,18 @@ function cerrarSesion() {
 
 .search-input::placeholder {
   color: #aaa;
+}
+
+.navbar-brand {
+  display: flex;
+  align-items: center;
+  height: 100%; /* 🚀 Que use toda la navbar */
+  overflow: hidden;
+}
+
+.navbar-logo {
+  height: 60px; /* 🚀 Le das el tamaño que quieras */
+  width: auto;
+  object-fit: contain;
 }
 </style>

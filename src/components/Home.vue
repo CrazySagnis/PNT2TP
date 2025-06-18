@@ -28,7 +28,7 @@
         'mt-without-banner': searchStore.query,
       }"
     >
-      🛒 <span style="font-size: 1.6rem">Productos</span>
+      🛒 <span style="font-size: 1.6rem; color: #ffc107">Productos</span>
     </h2>
 
     <!-- Si hay productos -->

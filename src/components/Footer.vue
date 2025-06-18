@@ -3,7 +3,12 @@
     <div class="container-fluid px-5">
       <div class="row">
         <div class="col-md-4 mb-3">
-          <h5>⚙️ TechStore</h5>
+          <router-link
+            class="navbar-brand fw-bold text-warning d-flex align-items-center"
+            to="/home"
+          >
+            <img :src="MeowWare32" alt="MeowWare Logo" class="navbar-logo me-2" />
+          </router-link>
           <p>Tu tienda confiable de componentes de hardware. Calidad y rendimiento garantizados.</p>
         </div>
         <div class="col-md-4 mb-3">
@@ -54,4 +59,13 @@ import NvidiaLogo from '@/assets/img/nvidia.png'
 import MSILogo from '@/assets/img/MSI.png'
 import AsusLogo from '@/assets/img/asus.png'
 import GigabyteLogo from '@/assets/img/gigabyte.png'
+import MeowWare32 from '@/assets/img/MeowWare32.png'
 </script>
+
+<style>
+.navbar-logo {
+  height: 60px; /* 🚀 Le das el tamaño que quieras */
+  width: auto;
+  object-fit: contain;
+}
+</style>
