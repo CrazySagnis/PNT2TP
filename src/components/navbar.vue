@@ -1,7 +1,8 @@
 <template>
-  <nav class="navbar navbar-expand-lg navbar-light bg-light w-100">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-sm fixed-top">
     <div class="container-fluid">
-      <router-link class="navbar-brand" to="/home">Navbar</router-link>
+      <router-link class="navbar-brand fw-bold text-warning" to="/home"> TechStore </router-link>
+
       <button
         class="navbar-toggler"
         type="button"
@@ -15,59 +16,59 @@
       </button>
 
       <div class="collapse navbar-collapse" id="navbarNav">
-        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-          <li class="nav-item active">
-            <router-link class="nav-link" to="/home" exact>
-              Home <span class="sr-only">(current)</span>
-            </router-link>
-          </li>
+        <ul
+          class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center gap-2"
+          v-if="productosStore.productosCargados"
+        >
+          <!-- Botón "Todos" -->
           <li class="nav-item">
-            <router-link class="nav-link" to="/link">Link</router-link>
-          </li>
-          <li class="nav-item dropdown">
-            <a
-              class="nav-link dropdown-toggle"
-              href="#"
-              id="navbarDropdown"
-              role="button"
-              data-bs-toggle="dropdown"
-              aria-haspopup="true"
-              aria-expanded="false"
+            <button
+              class="btn btn-outline-light btn-sm px-3"
+              :class="{ 'active-category': productosStore.categoriaSeleccionada === '' }"
+              @click="seleccionarCategoria('')"
             >
-              Dropdown
-            </a>
-            <div class="dropdown-menu" aria-labelledby="navbarDropdown">
-              <router-link class="dropdown-item" to="/action">Action</router-link>
-              <router-link class="dropdown-item" to="/another-action">Another action</router-link>
-              <div class="dropdown-divider"></div>
-              <router-link class="dropdown-item" to="/something-else">
-                Something else here
-              </router-link>
-            </div>
+              Todos
+              <span v-if="productosStore.categoriaSeleccionada === ''">✔️</span>
+            </button>
           </li>
 
-          <li class="nav-item d-flex align-items-center">
-            <form class="d-flex">
-              <input
-                v-model="searchStore.query"
-                class="form-control me-2"
-                type="search"
-                placeholder="Buscar producto"
-                aria-label="Buscar"
-              />
-              <button class="btn btn-outline-success" type="submit">Search</button>
-            </form>
+          <!-- Categorías -->
+          <li
+            v-for="categoria in productosStore.categoriasDisponibles"
+            :key="categoria"
+            class="nav-item"
+          >
+            <button
+              class="btn btn-outline-light btn-sm px-3"
+              :class="{ 'active-category': productosStore.categoriaSeleccionada === categoria }"
+              @click="seleccionarCategoria(categoria)"
+            >
+              {{ categoria }}
+              <span v-if="productosStore.categoriaSeleccionada === categoria">✔️</span>
+            </button>
+          </li>
+
+          <!-- Input de búsqueda (con estilo) -->
+          <li class="nav-item d-flex align-items-center ms-3">
+            <input
+              v-model="searchStore.query"
+              class="form-control form-control-sm search-input"
+              type="search"
+              placeholder="Buscar producto..."
+              aria-label="Buscar"
+            />
           </li>
         </ul>
 
-        <div class="d-flex gap-2">
-          <button
-            v-if="puedeVerBoton"
-            class="btn btn-warning"
-            @click="alert('Sos admin!')"
-          >
+        <!-- Si los productos no cargaron aún -->
+        <div v-else class="navbar-text text-light me-auto">Cargando categorías...</div>
+
+        <!-- Botones Admin / Cerrar Sesión -->
+        <div class="d-flex gap-2 ms-3">
+          <button v-if="puedeVerBoton" class="btn btn-warning" @click="alert('Sos admin!')">
             Admin Button
           </button>
+
           <button v-if="estaAutenticado" class="btn btn-outline-danger" @click="cerrarSesion">
             Cerrar Sesión
           </button>
@@ -85,9 +86,11 @@ import { useSearchStore } from '@/stores/searchStore'
 import { computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/usuarioStore'
+import { useProductosStore } from '@/stores/productosStore'
 
 const searchStore = useSearchStore()
 const authStore = useAuthStore()
+const productosStore = useProductosStore()
 const router = useRouter()
 
 const estaAutenticado = computed(() => authStore.isAuthenticated)
@@ -96,8 +99,47 @@ const puedeVerBoton = computed(() => {
   return authStore.usuario && authStore.usuario.rol !== 'limitado'
 })
 
+function seleccionarCategoria(categoria) {
+  productosStore.categoriaSeleccionada = categoria
+}
+
 function cerrarSesion() {
   authStore.logout()
   router.push('/login')
 }
 </script>
+
+<style scoped>
+.navbar {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  z-index: 999;
+}
+
+.navbar .btn {
+  transition: all 0.2s ease;
+}
+
+.navbar .btn:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.active-category {
+  border-color: #ffc107;
+  color: #ffc107 !important;
+  font-weight: bold;
+}
+
+.search-input {
+  min-width: 220px;
+  max-width: 300px;
+  padding: 6px 12px;
+  border-radius: 0.3rem;
+  background-color: #212529;
+  border: 1px solid #555;
+  color: #fff;
+}
+
+.search-input::placeholder {
+  color: #aaa;
+}
+</style>

@@ -1,123 +1,91 @@
 <template>
   <div class="container my-5">
-    <h2 class="text-center fw-bold mb-5">
-      🛒 <span style="font-size: 1.6rem">Productos</span>
-    </h2>
+    <h2 class="text-center fw-bold mb-5">🛒 <span style="font-size: 1.6rem">Productos</span></h2>
 
-    <div v-for="(grupo, tipo) in productosPorTipo" :key="tipo" class="mb-5">
-      <h3 class="text-center text-primary">{{ tipo }}</h3>
+    <!-- Si hay productos -->
+    <template v-if="Object.keys(productosStore.productosFiltradosPorCategoria).length > 0">
+      <template v-for="(grupo, tipo) in productosStore.productosFiltradosPorCategoria" :key="tipo">
+        <div class="mb-5" :id="tipo">
+          <h3 class="text-center text-primary">{{ tipo }}</h3>
 
-      <div class="position-relative">
-        <swiper
-          :modules="[Navigation]"
-          :slides-per-view="3"
-          :space-between="20"
-          navigation
-          class="product-swiper"
-        >
-          <swiper-slide
-            v-for="item in grupoFiltrado(grupo)"
-            :key="item.id"
-          >
-            <div
-              class="card h-100 shadow-sm rounded-4 position-relative cursor-pointer product-card"
-              @click="mostrarBoton(item.id)"
+          <div class="position-relative">
+            <swiper
+              :modules="[Navigation]"
+              :slides-per-view="3"
+              :space-between="20"
+              navigation
+              class="product-swiper"
             >
-              <img
-                :src="item.imagen"
-                class="card-img-top p-3"
-                alt="imagen"
-                style="max-height: 200px; object-fit: contain"
-              />
-              <div class="card-body d-flex flex-column">
-                <h5 class="card-title fw-semibold mb-2">{{ item.nombre }}</h5>
-                <p class="text-muted small mb-2">{{ item.marca }}</p>
-                <p class="text-success fw-bold mb-2">
-                  {{ mostrarPrecioMinimo(item.id) }}
-                </p>
-                <p class="card-text text-muted small flex-grow-1">
-                  {{ item.descripcion }}
-                </p>
-                <div class="d-flex flex-column gap-2 mt-3">
-                  <router-link
-                    :to="{ name: 'Details', params: { id: item.id } }"
-                    class="btn btn-primary"
-                  >
-                    Ver más
-                  </router-link>
-                  <button class="btn btn-success">Comprar</button>
-                  <button class="btn btn-outline-secondary">Añadir al carrito</button>
-                </div>
-              </div>
-              <transition name="fade">
+              <swiper-slide v-for="item in grupo" :key="item.id">
                 <div
-                  v-if="productoEnPruebaId === item.id"
-                  class="btn btn-warning position-absolute top-50 start-50 translate-middle fw-bold shadow"
-                  style="z-index: 10"
+                  class="card h-100 shadow-sm rounded-4 position-relative cursor-pointer product-card"
+                  @click="mostrarBoton(item.id)"
                 >
-                  PROBANDO
+                  <img
+                    :src="item.imagen"
+                    class="card-img-top p-3"
+                    alt="imagen"
+                    style="max-height: 200px; object-fit: contain"
+                  />
+                  <div class="card-body d-flex flex-column">
+                    <h5 class="card-title fw-semibold mb-2">{{ item.nombre }}</h5>
+                    <p class="text-muted small mb-2">{{ item.marca }}</p>
+                    <p class="text-success fw-bold mb-2">
+                      {{ mostrarPrecioMinimo(item.id) }}
+                    </p>
+                    <p class="card-text text-muted small flex-grow-1">
+                      {{ item.descripcion }}
+                    </p>
+                    <div class="d-flex flex-column gap-2 mt-3">
+                      <router-link
+                        :to="{ name: 'Details', params: { id: item.id } }"
+                        class="btn btn-primary"
+                      >
+                        Ver más
+                      </router-link>
+                      <button class="btn btn-success">Comprar</button>
+                      <button class="btn btn-outline-secondary">Añadir al carrito</button>
+                    </div>
+                  </div>
+                  <transition name="fade">
+                    <div
+                      v-if="productoEnPruebaId === item.id"
+                      class="btn btn-warning position-absolute top-50 start-50 translate-middle fw-bold shadow"
+                      style="z-index: 10"
+                    >
+                      PROBANDO
+                    </div>
+                  </transition>
                 </div>
-              </transition>
-            </div>
-          </swiper-slide>
-        </swiper>
+              </swiper-slide>
+            </swiper>
+          </div>
+        </div>
+      </template>
+    </template>
+
+    <!-- Si no hay resultados -->
+    <template v-else>
+      <div class="alert alert-warning text-center fw-bold fs-5">
+        No se encontraron productos que coincidan con la búsqueda.
       </div>
-    </div>
+    </template>
   </div>
 </template>
 
-
 <script setup>
-import { ref, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useSearchStore } from '@/stores/searchStore'
+import { ref } from 'vue'
 import { useAuthStore } from '@/stores/usuarioStore'
 import { Swiper, SwiperSlide } from 'swiper/vue'
 import { Navigation } from 'swiper/modules'
+import { useProductosStore } from '@/stores/productosStore'
 import 'swiper/css'
 import 'swiper/css/navigation'
 
-
-const searchStore = useSearchStore()
+const productosStore = useProductosStore()
 const authStore = useAuthStore()
-const usuario = authStore.usuario
 
-const productosPorTipo = ref({})
-const registros = ref([])
 const productoEnPruebaId = ref(null)
-
-onMounted(async () => {
-  if (!usuario) {
-    router.push('/login')
-    return
-  }
-
-  try {
-    const resProductos = await fetch(
-      'https://684b6f8ded2578be881b5940.mockapi.io/comparador/productos/productos'
-    )
-    const productos = await resProductos.json()
-
-    const resRegistros = await fetch(
-      'https://684b6f8ded2578be881b5940.mockapi.io/comparador/productos/registros'
-    )
-    registros.value = await resRegistros.json()
-
-    const agrupado = {}
-    productos.forEach((item, index) => {
-      item.id = item.id || (index + 1).toString()
-      const key = item.tipo.trim()
-      if (!agrupado[key]) {
-        agrupado[key] = []
-      }
-      agrupado[key].push(item)
-    })
-
-    productosPorTipo.value = agrupado
-  } catch (error) {
-    console.error('Error al traer productos o registros:', error)
-  }
-})
 
 const mostrarBoton = (id) => {
   productoEnPruebaId.value = id
@@ -126,15 +94,9 @@ const mostrarBoton = (id) => {
   }, 2000)
 }
 
-function grupoFiltrado(grupo) {
-  if (!searchStore.query) return grupo
-  const q = searchStore.query.toLowerCase()
-  return grupo.filter((item) => item.nombre.toLowerCase().includes(q))
-}
-
 function mostrarPrecioMinimo(productoId) {
-  const registrosDelProducto = registros.value.filter(
-    (r) => r.productoid === productoId.toString()
+  const registrosDelProducto = productosStore.registros.filter(
+    (r) => r.productoid === productoId.toString(),
   )
 
   if (registrosDelProducto.length === 0) return 'MOMENTÁNEAMENTE SIN STOCK'

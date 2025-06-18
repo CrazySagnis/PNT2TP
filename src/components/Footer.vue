@@ -1,6 +1,6 @@
 <template>
-  <footer class="bg-dark text-light py-4 mt-5">
-    <div class="container">
+  <footer class="footer bg-dark text-light py-4 mt-5">
+    <div class="container-fluid px-5">
       <div class="row">
         <div class="col-md-4 mb-3">
           <h5>⚙️ TechStore</h5>
