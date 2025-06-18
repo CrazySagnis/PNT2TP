@@ -1,6 +1,35 @@
 <template>
+  <div class="banner-swiper" v-if="!searchStore.query">
+    <swiper :modules="[Navigation, Autoplay]" :slides-per-view="1" navigation autoplay loop>
+      <swiper-slide>
+        <img
+          :src="bannerASUS"
+          alt="Banner ASUS"
+          @click="buscarMarca('asus')"
+          style="cursor: pointer"
+        />
+      </swiper-slide>
+      <swiper-slide>
+        <img
+          :src="bannerMSI"
+          alt="Banner MSI"
+          @click="buscarMarca('msi')"
+          style="cursor: pointer"
+        />
+      </swiper-slide>
+    </swiper>
+  </div>
+
   <div class="container my-5">
-    <h2 class="text-center fw-bold mb-5">🛒 <span style="font-size: 1.6rem">Productos</span></h2>
+    <h2
+      class="text-center fw-bold mb-5"
+      :class="{
+        'mt-with-banner': !searchStore.query,
+        'mt-without-banner': searchStore.query,
+      }"
+    >
+      🛒 <span style="font-size: 1.6rem">Productos</span>
+    </h2>
 
     <!-- Si hay productos -->
     <template v-if="Object.keys(productosStore.productosFiltradosPorCategoria).length > 0">
@@ -77,13 +106,19 @@
 import { ref } from 'vue'
 import { useAuthStore } from '@/stores/usuarioStore'
 import { Swiper, SwiperSlide } from 'swiper/vue'
-import { Navigation } from 'swiper/modules'
+import { Navigation, Autoplay } from 'swiper/modules'
 import { useProductosStore } from '@/stores/productosStore'
+import { useSearchStore } from '@/stores/searchStore' // 🚀 IMPORTANTE
+
+import bannerASUS from '@/assets/banner/bannerASUS.png'
+import bannerMSI from '@/assets/banner/BannerMSI.png'
+
 import 'swiper/css'
 import 'swiper/css/navigation'
 
 const productosStore = useProductosStore()
 const authStore = useAuthStore()
+const searchStore = useSearchStore() // 🚀 HAY QUE DEFINIRLO
 
 const productoEnPruebaId = ref(null)
 
@@ -106,6 +141,11 @@ function mostrarPrecioMinimo(productoId) {
 
   return `$ ${precioMin.toLocaleString()}`
 }
+
+// 🚀 FUNCIÓN para setear la búsqueda desde el banner
+function buscarMarca(marca) {
+  searchStore.query = marca
+}
 </script>
 
 <style scoped>
@@ -119,7 +159,6 @@ function mostrarPrecioMinimo(productoId) {
   border: 2px solid #dc3545;
 }
 
-/* Posicionamiento personalizado para flechas Swiper */
 .swiper-container-wrapper {
   position: relative;
   padding: 0 2rem;
@@ -156,5 +195,29 @@ function mostrarPrecioMinimo(productoId) {
   .swiper-button-prev {
     display: none;
   }
+}
+
+.banner-swiper {
+  margin-top: 100px; /* para que no tape el navbar */
+  margin-bottom: 40px;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+.banner-swiper img {
+  width: 100%;
+  height: 500px;
+}
+
+.mt-with-banner {
+  margin-top: 40px;
+}
+
+.mt-without-banner {
+  margin-top: 100px;
 }
 </style>

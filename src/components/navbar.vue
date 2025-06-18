@@ -32,9 +32,9 @@
             </button>
           </li>
 
-          <!-- Categorías -->
+          <!-- Categorías visibles -->
           <li
-            v-for="categoria in productosStore.categoriasDisponibles"
+            v-for="categoria in productosStore.categoriasVisibles"
             :key="categoria"
             class="nav-item"
           >
@@ -48,7 +48,7 @@
             </button>
           </li>
 
-          <!-- Input de búsqueda (con estilo) -->
+          <!-- Input de búsqueda -->
           <li class="nav-item d-flex align-items-center ms-3">
             <input
               v-model="searchStore.query"
