@@ -4,6 +4,7 @@
       <div class="row justify-content-center">
         <div class="col-lg-10 rounded-4 p-0 shadow-lg overflow-hidden login-container">
           <div class="row g-0">
+            <!-- COLUMNA IZQUIERDA -->
             <div class="col-md-6 p-5 d-flex flex-column justify-content-between">
               <div>
                 <h3 class="text-center mb-4 titulo-login">Iniciar Sesión</h3>
@@ -60,7 +61,7 @@
                 <input
                   v-model="emailOlvido"
                   type="email"
-                  class="form-control mb-2"
+                  :class="['form-control mb-2', error && !mensajeRecupero ? 'is-invalid' : '']"
                   placeholder="tucorreo@example.com"
                 />
                 <button class="btn btn-dark w-100" @click="enviarRecuperacion">Enviar</button>
@@ -76,6 +77,7 @@
               </div>
             </div>
 
+            <!-- COLUMNA DERECHA -->
             <div
               class="col-md-6 d-flex flex-column justify-content-center align-items-center p-4 text-white text-center anuncio-hardware"
             >
@@ -132,8 +134,15 @@ export default {
     }
 
     const enviarRecuperacion = () => {
-      if (emailOlvido.value.trim() !== '') {
+      const email = emailOlvido.value.trim()
+      const esEmailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+
+      if (esEmailValido) {
         mensajeRecupero.value = true
+        error.value = ''
+      } else {
+        mensajeRecupero.value = false
+        error.value = 'Ingresá un correo válido'
       }
     }
 
@@ -190,5 +199,10 @@ export default {
   background: #1f1f2b;
   color: #d1e4ff;
   font-family: 'Rajdhani', sans-serif;
+}
+
+.is-invalid {
+  border-color: #dc3545;
+  box-shadow: 0 0 0 0.1rem rgba(220, 53, 69, 0.25);
 }
 </style>

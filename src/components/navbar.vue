@@ -129,7 +129,7 @@ watchEffect(() => {
         <div class="d-flex gap-2 ms-3">
           <!-- 🔒 Solo admin ve el botón Admin -->
           <button v-if="puedeVerBoton" class="btn btn-warning" @click="router.push('/formulario')">
-            Admin
+            Cargar Producto
           </button>
 
           <button v-if="estaAutenticado" class="btn btn-outline-danger" @click="cerrarSesion">
