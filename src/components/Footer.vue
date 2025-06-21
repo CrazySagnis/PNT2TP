@@ -64,7 +64,7 @@ import MeowWare32 from '@/assets/img/MeowWare32.png'
 
 <style>
 .navbar-logo {
-  height: 60px; /* 🚀 Le das el tamaño que quieras */
+  height: 60px;
   width: auto;
   object-fit: contain;
 }

@@ -1,17 +1,10 @@
 <script setup>
-import { ref, computed, watchEffect } from 'vue'
+import { computed, watchEffect } from 'vue'
 import { useSearchStore } from '@/stores/searchStore'
 import { useAuthStore } from '@/stores/usuarioStore'
 import { useProductosStore } from '@/stores/productosStore'
 import { useCartStore } from '@/stores/cartStore'
 import { useRouter } from 'vue-router'
-
-import { Swiper, SwiperSlide } from 'swiper/vue'
-
-// Swiper styles:
-import 'swiper/css'
-import 'swiper/css/navigation'
-import 'swiper/css/autoplay'
 
 import MeowWare32 from '@/assets/img/MeowWare32.png'
 
@@ -36,8 +29,15 @@ function cerrarSesion() {
   cartStore.vaciarCarrito() // 👈 Vacía el carrito al cerrar sesión
   router.push('/login')
 }
+function irAlCarrito() {
+  if (!authStore.isAuthenticated) {
+    alert('Por favor iniciá sesión para ver tu carrito.')
+    router.push('/login')
+  } else {
+    router.push('/cart')
+  }
+}
 
-// 👀 Recarga el carrito cuando cambia el usuario:
 watchEffect(() => {
   const userId = authStore.usuario?.id || 'anonimo'
   const storedItems = localStorage.getItem(`carrito-${userId}`)
@@ -45,16 +45,13 @@ watchEffect(() => {
 })
 </script>
 
-
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-sm fixed-top">
     <div class="container-fluid">
-      <!-- LOGO -->
       <router-link class="navbar-brand fw-bold text-warning d-flex align-items-center" to="/home">
         <img :src="MeowWare32" alt="MeowWare Logo" class="navbar-logo me-2" />
       </router-link>
 
-      <!-- BOTÓN MOBILE -->
       <button
         class="navbar-toggler"
         type="button"
@@ -67,14 +64,11 @@ watchEffect(() => {
         <span class="navbar-toggler-icon"></span>
       </button>
 
-      <!-- CONTENIDO NAVBAR -->
       <div class="collapse navbar-collapse" id="navbarNav">
-        <!-- CATEGORÍAS + BUSCADOR -->
         <ul
           class="navbar-nav me-auto mb-2 mb-lg-0 d-flex align-items-center gap-2"
           v-if="productosStore.productosCargados"
         >
-          <!-- Botón "Todos" -->
           <li class="nav-item">
             <button
               class="btn btn-outline-light btn-sm px-3"
@@ -86,7 +80,6 @@ watchEffect(() => {
             </button>
           </li>
 
-          <!-- Categorías visibles -->
           <li
             v-for="categoria in productosStore.categoriasVisibles"
             :key="categoria"
@@ -102,7 +95,6 @@ watchEffect(() => {
             </button>
           </li>
 
-          <!-- Input de búsqueda -->
           <li class="nav-item d-flex align-items-center ms-3">
             <input
               v-model="searchStore.query"
@@ -114,14 +106,10 @@ watchEffect(() => {
           </li>
         </ul>
 
-        <!-- Si no hay productos aún -->
-        <div v-else class="navbar-text text-light me-auto">
-          Cargando categorías...
-        </div>
+        <div v-else class="navbar-text text-light me-auto">Cargando categorías...</div>
 
-        <!-- CARRITO -->
         <div class="d-flex align-items-center me-3">
-          <router-link to="/cart" class="btn btn-outline-primary position-relative">
+          <button class="btn btn-outline-primary position-relative" @click="irAlCarrito">
             🛒
             <span
               v-if="cartStore.items.length > 0"
@@ -129,29 +117,18 @@ watchEffect(() => {
             >
               {{ cartStore.items.length }}
             </span>
-          </router-link>
+          </button>
         </div>
 
-        <!-- LOGIN / LOGOUT -->
         <div class="d-flex gap-2 ms-3">
-          <!-- Botón Admin (opcional) -->
           <button v-if="puedeVerBoton" class="btn btn-warning" @click="alert('Sos admin!')">
             Admin Button
           </button>
 
-          <!-- Botón Cerrar sesión / Login -->
-          <button
-            v-if="estaAutenticado"
-            class="btn btn-outline-danger"
-            @click="cerrarSesion"
-          >
+          <button v-if="estaAutenticado" class="btn btn-outline-danger" @click="cerrarSesion">
             Cerrar Sesión
           </button>
-          <button
-            v-else
-            class="btn btn-outline-primary"
-            @click="router.push('/login')"
-          >
+          <button v-else class="btn btn-outline-primary" @click="router.push('/login')">
             Iniciar Sesión
           </button>
         </div>

@@ -1,13 +1,6 @@
 <template>
-  <!-- BANNER -->
   <div class="banner-swiper" v-if="!searchStore.query">
-    <swiper
-      :modules="[Navigation, Autoplay]"
-      :slides-per-view="1"
-      navigation
-      autoplay
-      loop
-    >
+    <swiper :modules="[Navigation, Autoplay]" :slides-per-view="1" navigation autoplay loop>
       <swiper-slide>
         <img
           :src="bannerASUS"
@@ -27,7 +20,6 @@
     </swiper>
   </div>
 
-  <!-- TÍTULO -->
   <div class="container my-5">
     <h2
       class="text-center fw-bold mb-5"
@@ -39,7 +31,6 @@
       🛒 <span style="font-size: 1.6rem; color: #ffc107">Productos</span>
     </h2>
 
-    <!-- SI HAY PRODUCTOS -->
     <template v-if="Object.keys(productosStore.productosFiltradosPorCategoria).length > 0">
       <template v-for="(grupo, tipo) in productosStore.productosFiltradosPorCategoria" :key="tipo">
         <div class="mb-5" :id="tipo">
@@ -55,10 +46,7 @@
               loop
               class="product-swiper"
             >
-              <swiper-slide
-                v-for="item in grupoFiltrado(grupo)"
-                :key="item.id"
-              >
+              <swiper-slide v-for="item in grupoFiltrado(grupo)" :key="item.id">
                 <div class="card h-100 shadow-sm rounded-4 position-relative product-card">
                   <img
                     :src="item.imagen"
@@ -82,11 +70,7 @@
                       >
                         Ver más
                       </router-link>
-                      <button class="btn btn-success">Comprar</button>
-                      <button
-                        class="btn btn-outline-secondary"
-                        @click.stop="abrirModalCarrito(item)"
-                      >
+                      <button class="btn btn-success" @click.stop="verificarAgregarAlCarrito(item)">
                         Añadir al carrito
                       </button>
                     </div>
@@ -99,19 +83,17 @@
       </template>
     </template>
 
-    <!-- NO HAY RESULTADOS -->
     <template v-else>
       <div class="alert alert-warning text-center fw-bold fs-5">
         No se encontraron productos que coincidan con la búsqueda.
       </div>
     </template>
 
-    <!-- MODAL -->
     <div
       class="modal fade"
       tabindex="-1"
       :class="{ show: mostrarModalCarrito }"
-      style="display: block;"
+      style="display: block"
       v-if="mostrarModalCarrito"
     >
       <div class="modal-dialog modal-lg">
@@ -131,10 +113,7 @@
                 </tr>
               </thead>
               <tbody>
-                <tr
-                  v-for="r in preciosActuales"
-                  :key="r.id"
-                >
+                <tr v-for="r in preciosActuales" :key="r.id">
                   <td>{{ r.tienda }}</td>
                   <td class="fw-bold text-success">$ {{ r.precio.toLocaleString() }}</td>
                   <td>
@@ -156,15 +135,12 @@
       </div>
     </div>
 
-    <div
-      class="modal-backdrop fade show"
-      v-if="mostrarModalCarrito"
-    ></div>
+    <div class="modal-backdrop fade show" v-if="mostrarModalCarrito"></div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useSearchStore } from '@/stores/searchStore'
 import { useAuthStore } from '@/stores/usuarioStore'
@@ -186,17 +162,9 @@ const cartStore = useCartStore()
 const searchStore = useSearchStore()
 const authStore = useAuthStore()
 
-const productoEnPruebaId = ref(null)
 const productoSeleccionado = ref(null)
 const mostrarModalCarrito = ref(false)
 const preciosActuales = ref([])
-
-const mostrarBoton = (id) => {
-  productoEnPruebaId.value = id
-  setTimeout(() => {
-    productoEnPruebaId.value = null
-  }, 2000)
-}
 
 function mostrarPrecioMinimo(productoId) {
   const registrosDelProducto = productosStore.registros.filter(
@@ -209,6 +177,15 @@ function mostrarPrecioMinimo(productoId) {
   const precioMin = Math.min(...preciosNumericos)
 
   return `$ ${precioMin.toLocaleString()}`
+}
+
+function verificarAgregarAlCarrito(item) {
+  if (!authStore.isAuthenticated) {
+    alert('Por favor iniciá sesión o creá una cuenta para agregar al carrito.')
+    router.push('/login')
+  } else {
+    abrirModalCarrito(item)
+  }
 }
 
 function grupoFiltrado(grupo) {
@@ -225,10 +202,10 @@ function abrirModalCarrito(producto) {
   productoSeleccionado.value = producto
 
   const registrosFiltrados = productosStore.registros.filter(
-    (r) => r.productoid === producto.id.toString()
+    (r) => r.productoid === producto.id.toString(),
   )
   const ultimosPorTienda = {}
-  registrosFiltrados.forEach(r => {
+  registrosFiltrados.forEach((r) => {
     const actual = ultimosPorTienda[r.tienda]
     if (!actual || new Date(r.fecha) > new Date(actual.fecha)) {
       ultimosPorTienda[r.tienda] = r
@@ -247,7 +224,7 @@ function agregarDesdeModal(registro) {
     descripcion: productoSeleccionado.value.descripcion,
     tienda: registro.tienda,
     precio: registro.precio,
-    link: registro.linkProducto
+    link: registro.linkProducto,
   })
   mostrarModalCarrito.value = false
 }

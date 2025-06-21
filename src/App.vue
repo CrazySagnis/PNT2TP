@@ -22,10 +22,10 @@ onMounted(() => {
 
 <style>
 body {
-  background-image: url('../src/assets/img/BackGroundImg.png'); /* Cambia la ruta según tu estructura */
-  background-size: cover; /* o "contain" o "auto" */
-  background-repeat: repeat; /* o no-repeat si preferís */
+  background-image: url('../src/assets/img/BackGroundImg.png');
+  background-size: cover;
+  background-repeat: repeat;
   background-position: center center;
-  background-attachment: fixed; /* para que no se mueva al scrollear */
+  background-attachment: fixed;
 }
 </style>
