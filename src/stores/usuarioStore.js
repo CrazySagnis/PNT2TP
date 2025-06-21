@@ -2,9 +2,16 @@ import { defineStore } from 'pinia'
 
 export const useAuthStore = defineStore('auth', {
   state: function () {
+    let usuarioGuardado = null
+    try {
+      usuarioGuardado = JSON.parse(localStorage.getItem('usuario'))
+    } catch (e) {
+      usuarioGuardado = null
+    }
+
     return {
-      usuario: JSON.parse(localStorage.getItem('usuario')) || null,
-      isAuthenticated: localStorage.getItem('usuario') !== null
+      usuario: usuarioGuardado,
+      isAuthenticated: usuarioGuardado !== null,
     }
   },
 
@@ -22,7 +29,11 @@ export const useAuthStore = defineStore('auth', {
     },
 
     tieneAccesoADetalle: function () {
-      return this.usuario && this.usuario.rol !== 'limitado'
-    }
-  }
+      return this.usuario && this.usuario.rol.trim() !== 'prueba'
+    },
+
+    tieneAccesoACarrito: function () {
+      return this.usuario && this.usuario.rol.trim() !== 'prueba'
+    },
+  },
 })

@@ -60,9 +60,19 @@
                 <input
                   v-model="emailOlvido"
                   type="email"
-                  class="form-control"
+                  class="form-control mb-2"
                   placeholder="tucorreo@example.com"
                 />
+                <button class="btn btn-dark w-100" @click="enviarRecuperacion">Enviar</button>
+
+                <div
+                  v-if="mensajeRecupero"
+                  class="alert alert-success alert-dismissible fade show mt-3"
+                  role="alert"
+                >
+                  Se envió el mail con las opciones para recuperar tu contraseña.
+                  <button type="button" class="btn-close" @click="mensajeRecupero = false"></button>
+                </div>
               </div>
             </div>
 
@@ -100,11 +110,13 @@ export default {
     const error = ref('')
     const olvido = ref(false)
     const emailOlvido = ref('')
+    const mensajeRecupero = ref(false)
 
     const iniciarSesion = () => {
       const usuariosValidos = [
         { usuario: 'admin', contrasena: 'admin', rol: 'admin' },
-        { usuario: 'admin2', contrasena: 'admin2', rol: 'limitado' },
+        { usuario: 'usuario', contrasena: 'usuario', rol: 'limitado' },
+        { usuario: 'prueba', contrasena: 'prueba', rol: 'prueba' },
       ]
 
       const encontrado = usuariosValidos.find(
@@ -119,6 +131,12 @@ export default {
       }
     }
 
+    const enviarRecuperacion = () => {
+      if (emailOlvido.value.trim() !== '') {
+        mensajeRecupero.value = true
+      }
+    }
+
     return {
       usuario,
       contrasena,
@@ -126,7 +144,9 @@ export default {
       error,
       olvido,
       emailOlvido,
+      mensajeRecupero,
       iniciarSesion,
+      enviarRecuperacion,
     }
   },
 }

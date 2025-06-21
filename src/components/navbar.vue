@@ -17,7 +17,7 @@ const router = useRouter()
 const estaAutenticado = computed(() => authStore.isAuthenticated)
 
 const puedeVerBoton = computed(() => {
-  return authStore.usuario && authStore.usuario.rol !== 'limitado'
+  return authStore.usuario && authStore.usuario.rol === 'admin'
 })
 
 function seleccionarCategoria(categoria) {
@@ -26,9 +26,10 @@ function seleccionarCategoria(categoria) {
 
 function cerrarSesion() {
   authStore.logout()
-  cartStore.vaciarCarrito() // 👈 Vacía el carrito al cerrar sesión
+  cartStore.vaciarCarrito()
   router.push('/login')
 }
+
 function irAlCarrito() {
   if (!authStore.isAuthenticated) {
     alert('Por favor iniciá sesión para ver tu carrito.')
@@ -108,7 +109,11 @@ watchEffect(() => {
 
         <div v-else class="navbar-text text-light me-auto">Cargando categorías...</div>
 
-        <div class="d-flex align-items-center me-3">
+        <!-- 🔒 Ocultar botón carrito si el usuario es 'prueba' -->
+        <div
+          class="d-flex align-items-center me-3"
+          v-if="authStore.usuario && authStore.usuario.rol !== 'prueba'"
+        >
           <button class="btn btn-outline-primary position-relative" @click="irAlCarrito">
             🛒
             <span
@@ -121,8 +126,9 @@ watchEffect(() => {
         </div>
 
         <div class="d-flex gap-2 ms-3">
-          <button v-if="puedeVerBoton" class="btn btn-warning" @click="alert('Sos admin!')">
-            Admin Button
+          <!-- 🔒 Solo admin ve el botón Admin -->
+          <button v-if="puedeVerBoton" class="btn btn-warning" @click="router.push('/formulario')">
+            Admin
           </button>
 
           <button v-if="estaAutenticado" class="btn btn-outline-danger" @click="cerrarSesion">

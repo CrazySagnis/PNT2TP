@@ -183,6 +183,8 @@ function verificarAgregarAlCarrito(item) {
   if (!authStore.isAuthenticated) {
     alert('Por favor iniciá sesión o creá una cuenta para agregar al carrito.')
     router.push('/login')
+  } else if (authStore.usuario.rol === 'prueba') {
+    alert('Acceso denegado')
   } else {
     abrirModalCarrito(item)
   }
