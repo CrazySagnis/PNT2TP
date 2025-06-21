@@ -24,10 +24,13 @@
             <tr v-for="r in registrosProducto" :key="r.id">
               <td>{{ r.tienda }}</td>
               <td class="fw-bold text-success">$ {{ r.precio.toLocaleString() }}</td>
-              <td>
+              <td class="d-flex gap-2">
                 <a :href="r.link_producto" target="_blank" class="btn btn-outline-primary btn-sm">
                   Ver producto
                 </a>
+                <button class="btn btn-success btn-sm" @click="agregarAlCarritoDesdeDetails(r)">
+                  Añadir al carrito
+                </button>
               </td>
             </tr>
           </tbody>
@@ -54,6 +57,9 @@
 import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ApexChart from 'vue3-apexcharts'
+import { useCartStore } from '@/stores/cartStore'
+
+const cartStore = useCartStore()
 
 const producto = ref(null)
 const registrosProducto = ref([])
@@ -133,4 +139,18 @@ onMounted(async () => {
     router.push('/home')
   }
 })
+
+function agregarAlCarritoDesdeDetails(registro) {
+  cartStore.agregarAlCarrito({
+    id: producto.value.id,
+    nombre: producto.value.nombre,
+    imagen: producto.value.imagen,
+    descripcion: producto.value.descripcion,
+    tienda: registro.tienda,
+    precio: registro.precio,
+    link: registro.link_producto,
+  })
+
+  window.alert('✅ Producto añadido al carrito')
+}
 </script>
