@@ -1,23 +1,29 @@
 // src/stores/cartStore.js
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
+import { ref, computed, watch, watchEffect } from 'vue'
 import { useAuthStore } from './usuarioStore'
 
 export const useCartStore = defineStore('cartStore', () => {
   const authStore = useAuthStore()
 
-  // Si el usuario está logueado, usamos su ID, si no, 'anonimo'
-  const userId = authStore.usuario?.id || 'anonimo'
+  // computed userId (se actualiza al cambiar de usuario)
+  const userId = computed(() => authStore.usuario?.id || 'anonimo')
 
-  // Intentamos recuperar el carrito del localStorage
-  const items = ref(JSON.parse(localStorage.getItem(`carrito-${userId}`)) || [])
+  // items: arranca cargando del localStorage
+  const items = ref([])
 
-  // Agregar producto al carrito
+  //  cada vez que cambia el userId, cargamos su carrito
+  watchEffect(() => {
+    const storedItems = localStorage.getItem(`carrito-${userId.value}`)
+    items.value = storedItems ? JSON.parse(storedItems) : []
+  })
+
+  // Agregar producto
   function agregarAlCarrito(producto) {
     items.value.push(producto)
   }
 
-  // Remover un producto del carrito por índice
+  // Remover por índice
   function removerDelCarrito(index) {
     if (index >= 0 && index < items.value.length) {
       items.value.splice(index, 1)
@@ -29,9 +35,9 @@ export const useCartStore = defineStore('cartStore', () => {
     items.value = []
   }
 
-  // Guardar en localStorage automáticamente cada vez que cambian los items
+  // Guardar en localStorage cada vez que items cambian
   watch(items, (newVal) => {
-    localStorage.setItem(`carrito-${userId}`, JSON.stringify(newVal))
+    localStorage.setItem(`carrito-${userId.value}`, JSON.stringify(newVal))
   }, { deep: true })
 
   return {

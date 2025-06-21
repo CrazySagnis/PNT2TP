@@ -1,7 +1,13 @@
 <template>
   <!-- BANNER -->
   <div class="banner-swiper" v-if="!searchStore.query">
-    <swiper slides-per-view="1" navigation autoplay loop>
+    <swiper
+      :modules="[Navigation, Autoplay]"
+      :slides-per-view="1"
+      navigation
+      autoplay
+      loop
+    >
       <swiper-slide>
         <img
           :src="bannerASUS"
@@ -41,9 +47,12 @@
 
           <div class="position-relative">
             <swiper
-              slides-per-view="3"
-              space-between="20"
+              :modules="[Navigation, Autoplay]"
+              :slides-per-view="3"
+              :space-between="20"
               navigation
+              autoplay
+              loop
               class="product-swiper"
             >
               <swiper-slide
@@ -162,6 +171,8 @@ import { useAuthStore } from '@/stores/usuarioStore'
 import { useProductosStore } from '@/stores/productosStore'
 import { useCartStore } from '@/stores/cartStore'
 import { Swiper, SwiperSlide } from 'swiper/vue'
+import { Navigation, Autoplay } from 'swiper/modules'
+
 import 'swiper/css'
 import 'swiper/css/navigation'
 import 'swiper/css/autoplay'
@@ -245,3 +256,77 @@ function cerrarModalCarrito() {
   mostrarModalCarrito.value = false
 }
 </script>
+
+<style scoped>
+.cursor-pointer {
+  cursor: pointer;
+}
+.product-card {
+  transition: border 0.3s ease;
+}
+.product-card:hover {
+  border: 2px solid #dc3545;
+}
+
+.swiper-container-wrapper {
+  position: relative;
+  padding: 0 2rem;
+}
+
+.mySwiper {
+  overflow: visible;
+  padding: 0 2rem;
+}
+
+.swiper-button-next,
+.swiper-button-prev {
+  color: #007bff;
+  width: 40px;
+  height: 40px;
+  background-color: white;
+  border-radius: 50%;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  top: 50%;
+  transform: translateY(-50%);
+  z-index: 10;
+}
+
+.swiper-button-prev {
+  left: -20px;
+}
+
+.swiper-button-next {
+  right: -20px;
+}
+
+@media (max-width: 768px) {
+  .swiper-button-next,
+  .swiper-button-prev {
+    display: none;
+  }
+}
+
+.banner-swiper {
+  margin-top: 100px;
+  margin-bottom: 40px;
+  width: 90%;
+  margin-left: auto;
+  margin-right: auto;
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+.banner-swiper img {
+  width: 100%;
+  height: 500px;
+}
+
+.mt-with-banner {
+  margin-top: 40px;
+}
+
+.mt-without-banner {
+  margin-top: 100px;
+}
+</style>

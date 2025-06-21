@@ -1,10 +1,18 @@
 <script setup>
-import { computed } from 'vue'
+import { ref, computed, watchEffect } from 'vue'
 import { useSearchStore } from '@/stores/searchStore'
-import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/usuarioStore'
 import { useProductosStore } from '@/stores/productosStore'
 import { useCartStore } from '@/stores/cartStore'
+import { useRouter } from 'vue-router'
+
+import { Swiper, SwiperSlide } from 'swiper/vue'
+
+// Swiper styles:
+import 'swiper/css'
+import 'swiper/css/navigation'
+import 'swiper/css/autoplay'
+
 import MeowWare32 from '@/assets/img/MeowWare32.png'
 
 const searchStore = useSearchStore()
@@ -25,9 +33,18 @@ function seleccionarCategoria(categoria) {
 
 function cerrarSesion() {
   authStore.logout()
+  cartStore.vaciarCarrito() // 👈 Vacía el carrito al cerrar sesión
   router.push('/login')
 }
+
+// 👀 Recarga el carrito cuando cambia el usuario:
+watchEffect(() => {
+  const userId = authStore.usuario?.id || 'anonimo'
+  const storedItems = localStorage.getItem(`carrito-${userId}`)
+  cartStore.items = storedItems ? JSON.parse(storedItems) : []
+})
 </script>
+
 
 <template>
   <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-3 shadow-sm fixed-top">
