@@ -67,9 +67,47 @@
               ¿Querés ayudar a más michis?</em
             >
           </p>
-          <button class="btn btn-warning w-100 fw-bold" @click="donar()">
-            Donar ${{ donacionRecomendada.toLocaleString() }} para gatitos 🐱
-          </button>
+          <!-- Opciones de donación -->
+          <div class="d-flex flex-wrap gap-2 mb-3">
+            <button class="btn btn-warning fw-bold flex-fill" @click="donar(500)">
+              Donar $500 🐾
+            </button>
+            <button class="btn btn-warning fw-bold flex-fill" @click="donar(1000)">
+              Donar $1000 🐾
+            </button>
+            <button class="btn btn-warning fw-bold flex-fill" @click="donar(2000)">
+              Donar $2000 🐾
+            </button>
+            <button
+              class="btn btn-secondary fw-bold flex-fill"
+              @click="mostrarPersonalizado = !mostrarPersonalizado"
+            >
+              Otro monto 🐾
+            </button>
+          </div>
+
+          <!-- Monto personalizado (aparece solo si se eligió "Otro monto") -->
+          <div v-if="mostrarPersonalizado" class="input-group mb-2">
+            <span class="input-group-text">$</span>
+            <input
+              type="number"
+              min="100"
+              step="50"
+              v-model="montoPersonalizado"
+              class="form-control"
+              placeholder="Ingresá un monto (mín $100)"
+            />
+          </div>
+
+          <div v-if="mostrarPersonalizado" class="d-grid">
+            <button
+              class="btn btn-primary fw-bold"
+              :disabled="montoPersonalizado < 100"
+              @click="donar(montoPersonalizado)"
+            >
+              Donar ${{ montoPersonalizado || 0 }} 🐾
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -91,6 +129,7 @@
 <script setup>
 import { onMounted, ref, computed } from 'vue'
 import { useCartStore } from '@/stores/cartStore'
+import axios from 'axios'
 
 const cartStore = useCartStore()
 
@@ -98,6 +137,9 @@ const registros = ref([])
 
 const preciosMaximos = ref({})
 
+const montoPersonalizado = ref(500)
+const mostrarPersonalizado = ref(false)
+const ACCESS_TOKEN = 'TEST-6936422238391276-062117-488dc9994b44a3e69d9822b5b8dd93fa-234650284'
 onMounted(async () => {
   try {
     const resRegistros = await fetch(
@@ -140,11 +182,33 @@ const totalAhorro = computed(() => {
   return totalSinAyuda.value - totalConAyuda.value
 })
 
-const donacionRecomendada = computed(() => {
-  return Math.round(totalAhorro.value * 0.01)
-})
+// Función para donar:
+async function donar(monto) {
+  try {
+    const response = await axios.post(
+      'https://api.mercadopago.com/checkout/preferences',
+      {
+        items: [
+          {
+            title: 'Donación para los gatitos 🐾',
+            quantity: 1,
+            currency_id: 'ARS',
+            unit_price: monto,
+          },
+        ],
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${ACCESS_TOKEN}`,
+        },
+      },
+    )
 
-function donar() {
-  window.open('https://link.mercadopago.com.ar/meoware', '_blank')
+    const initPoint = response.data.init_point
+    window.open(initPoint, '_blank')
+  } catch (error) {
+    console.error('Error al crear preferencia de donación:', error)
+    alert('Hubo un error al procesar la donación')
+  }
 }
 </script>

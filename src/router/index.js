@@ -4,6 +4,7 @@ import Home from '../components/Home.vue'
 import Details from '../components/Details.vue'
 import Cart from '@/components/Cart.vue'
 import Formulario from '../components/Formulario.vue'
+import Donaciones from '@/components/Donaciones.vue'
 
 const routes = [
   { path: '/', redirect: '/login' },
@@ -22,6 +23,7 @@ const routes = [
     meta: { bloquearLimitado: true },
   },
   { path: '/cart', name: 'Cart', component: Cart },
+  { path: '/donaciones', name: 'Donaciones', component: Donaciones },
 ]
 
 const router = createRouter({

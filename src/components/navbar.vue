@@ -114,6 +114,7 @@ watchEffect(() => {
           class="d-flex align-items-center me-3"
           v-if="authStore.usuario && authStore.usuario.rol !== 'prueba'"
         >
+          <router-link to="/donaciones" class="btn btn-outline-success"> 🌟 Donar </router-link>
           <button class="btn btn-outline-primary position-relative" @click="irAlCarrito">
             🛒
             <span
