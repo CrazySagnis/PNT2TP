@@ -53,13 +53,13 @@
 </template>
 
 <script setup>
-import IntelLogo from '@/assets/img/intel.png'
 import AMDLogo from '@/assets/img/amd.png'
 import NvidiaLogo from '@/assets/img/nvidia.png'
 import MSILogo from '@/assets/img/MSI.png'
 import AsusLogo from '@/assets/img/asus.png'
 import GigabyteLogo from '@/assets/img/gigabyte.png'
 import MeowWare32 from '@/assets/img/MeowWare32.png'
+import IntelLogo from '@/assets/img/intel.png'
 </script>
 
 <style>
