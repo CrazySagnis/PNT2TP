@@ -96,10 +96,8 @@ onMounted(async () => {
     )
     const todosRegistros = await resRegistros.json()
 
-    // Filtrar solo registros del producto actual
     const registrosFiltrados = todosRegistros.filter((r) => r.productoid === id.toString())
 
-    // Mostrar solo el precio más reciente por tienda en la tabla
     const ultimosPorTienda = {}
     registrosFiltrados.forEach((r) => {
       const actual = ultimosPorTienda[r.tienda]
@@ -109,7 +107,6 @@ onMounted(async () => {
     })
     registrosProducto.value = Object.values(ultimosPorTienda)
 
-    // Preparar datos para el gráfico
     const seriesPorTienda = {}
     const categoriasSet = new Set()
 
@@ -121,7 +118,6 @@ onMounted(async () => {
       categoriasSet.add(r.fecha)
     })
 
-    // Ordenar fechas y completar series
     const fechasOrdenadas = Array.from(categoriasSet).sort((a, b) => new Date(a) - new Date(b))
 
     chartSeries.value = Object.entries(seriesPorTienda).map(([tienda, valores]) => {

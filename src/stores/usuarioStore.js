@@ -1,39 +1,44 @@
 import { defineStore } from 'pinia'
+import { ref, computed } from 'vue'
 
-export const useAuthStore = defineStore('auth', {
-  state: function () {
-    let usuarioGuardado = null
-    try {
-      usuarioGuardado = JSON.parse(localStorage.getItem('usuario'))
-    } catch (e) {
-      usuarioGuardado = null
+export const useAuthStore = defineStore('auth', () => {
+  const usuario = ref(null)
+  const isAuthenticated = computed(() => usuario.value !== null)
+
+  // Cargar usuario guardado
+  try {
+    const usuarioGuardado = JSON.parse(localStorage.getItem('usuario'))
+    if (usuarioGuardado) {
+      usuario.value = usuarioGuardado
     }
+  } catch (e) {
+    usuario.value = null
+  }
 
-    return {
-      usuario: usuarioGuardado,
-      isAuthenticated: usuarioGuardado !== null,
-    }
-  },
+  function setUsuario(usuarioData) {
+    usuario.value = usuarioData
+    localStorage.setItem('usuario', JSON.stringify(usuarioData))
+  }
 
-  actions: {
-    setUsuario: function (usuarioData) {
-      this.usuario = usuarioData
-      this.isAuthenticated = true
-      localStorage.setItem('usuario', JSON.stringify(usuarioData))
-    },
+  function logout() {
+    usuario.value = null
+    localStorage.removeItem('usuario')
+  }
 
-    logout: function () {
-      this.usuario = null
-      this.isAuthenticated = false
-      localStorage.removeItem('usuario')
-    },
+  function tieneAccesoADetalle() {
+    return usuario.value && usuario.value.rol.trim() !== 'prueba'
+  }
 
-    tieneAccesoADetalle: function () {
-      return this.usuario && this.usuario.rol.trim() !== 'prueba'
-    },
+  function tieneAccesoACarrito() {
+    return usuario.value && usuario.value.rol.trim() !== 'prueba'
+  }
 
-    tieneAccesoACarrito: function () {
-      return this.usuario && this.usuario.rol.trim() !== 'prueba'
-    },
-  },
+  return {
+    usuario,
+    isAuthenticated,
+    setUsuario,
+    logout,
+    tieneAccesoADetalle,
+    tieneAccesoACarrito,
+  }
 })

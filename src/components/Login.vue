@@ -96,68 +96,52 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/usuarioStore'
 
-export default {
-  setup() {
-    const router = useRouter()
-    const store = useAuthStore()
+const router = useRouter()
+const store = useAuthStore()
 
-    const usuario = ref('')
-    const contrasena = ref('')
-    const mostrarClave = ref(false)
-    const error = ref('')
-    const olvido = ref(false)
-    const emailOlvido = ref('')
-    const mensajeRecupero = ref(false)
+const usuario = ref('')
+const contrasena = ref('')
+const mostrarClave = ref(false)
+const error = ref('')
+const olvido = ref(false)
+const emailOlvido = ref('')
+const mensajeRecupero = ref(false)
 
-    const iniciarSesion = () => {
-      const usuariosValidos = [
-        { usuario: 'admin', contrasena: 'admin', rol: 'admin' },
-        { usuario: 'usuario', contrasena: 'usuario', rol: 'limitado' },
-        { usuario: 'prueba', contrasena: 'prueba', rol: 'prueba' },
-      ]
+function iniciarSesion() {
+  const usuariosValidos = [
+    { usuario: 'admin', contrasena: 'admin', rol: 'admin' },
+    { usuario: 'usuario', contrasena: 'usuario', rol: 'limitado' },
+    { usuario: 'prueba', contrasena: 'prueba', rol: 'prueba' },
+  ]
 
-      const encontrado = usuariosValidos.find(
-        (u) => u.usuario === usuario.value && u.contrasena === contrasena.value,
-      )
+  const encontrado = usuariosValidos.find(
+    (u) => u.usuario === usuario.value && u.contrasena === contrasena.value,
+  )
 
-      if (encontrado) {
-        store.setUsuario(encontrado)
-        router.push('/home')
-      } else {
-        error.value = 'Usuario o contraseña incorrectos'
-      }
-    }
+  if (encontrado) {
+    store.setUsuario(encontrado)
+    router.push('/home')
+  } else {
+    error.value = 'Usuario o contraseña incorrectos'
+  }
+}
 
-    const enviarRecuperacion = () => {
-      const email = emailOlvido.value.trim()
-      const esEmailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+function enviarRecuperacion() {
+  const email = emailOlvido.value.trim()
+  const esEmailValido = /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
 
-      if (esEmailValido) {
-        mensajeRecupero.value = true
-        error.value = ''
-      } else {
-        mensajeRecupero.value = false
-        error.value = 'Ingresá un correo válido'
-      }
-    }
-
-    return {
-      usuario,
-      contrasena,
-      mostrarClave,
-      error,
-      olvido,
-      emailOlvido,
-      mensajeRecupero,
-      iniciarSesion,
-      enviarRecuperacion,
-    }
-  },
+  if (esEmailValido) {
+    mensajeRecupero.value = true
+    error.value = ''
+  } else {
+    mensajeRecupero.value = false
+    error.value = 'Ingresá un correo válido'
+  }
 }
 </script>
 

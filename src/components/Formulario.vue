@@ -110,77 +110,59 @@
   </div>
 </template>
 
-<script>
+<script setup>
 import { ref } from 'vue'
 
-export default {
-  setup() {
-    const nombre = ref('')
-    const descripcion = ref('')
-    const precio = ref(null)
-    const categoria = ref('')
-    const archivoImagen = ref(null)
-    const previewImagen = ref(null)
-    const linkTienda = ref('')
-    const mensaje = ref('')
-    const esError = ref(false)
+const nombre = ref('')
+const descripcion = ref('')
+const precio = ref(null)
+const categoria = ref('')
+const archivoImagen = ref(null)
+const previewImagen = ref(null)
+const linkTienda = ref('')
+const mensaje = ref('')
+const esError = ref(false)
 
-    const manejarImagen = function (evento) {
-      const archivo = evento.target.files[0]
-      if (archivo) {
-        archivoImagen.value = archivo
-        previewImagen.value = URL.createObjectURL(archivo)
-      }
-    }
+function manejarImagen(evento) {
+  const archivo = evento.target.files[0]
+  if (archivo) {
+    archivoImagen.value = archivo
+    previewImagen.value = URL.createObjectURL(archivo)
+  }
+}
 
-    const crearProducto = function () {
-      if (
-        nombre.value &&
-        descripcion.value &&
-        precio.value &&
-        categoria.value &&
-        archivoImagen.value &&
-        linkTienda.value
-      ) {
-        console.log('Producto creado:', {
-          nombre: nombre.value,
-          descripcion: descripcion.value,
-          precio: precio.value,
-          categoria: categoria.value,
-          imagen: archivoImagen.value.name,
-          linkTienda: linkTienda.value,
-        })
+function crearProducto() {
+  if (
+    nombre.value &&
+    descripcion.value &&
+    precio.value &&
+    categoria.value &&
+    archivoImagen.value &&
+    linkTienda.value
+  ) {
+    console.log('Producto creado:', {
+      nombre: nombre.value,
+      descripcion: descripcion.value,
+      precio: precio.value,
+      categoria: categoria.value,
+      imagen: archivoImagen.value.name,
+      linkTienda: linkTienda.value,
+    })
 
-        mensaje.value = 'Producto creado correctamente'
-        esError.value = false
+    mensaje.value = 'Producto creado correctamente'
+    esError.value = false
 
-        nombre.value = ''
-        descripcion.value = ''
-        precio.value = null
-        categoria.value = ''
-        archivoImagen.value = null
-        previewImagen.value = null
-        linkTienda.value = ''
-      } else {
-        mensaje.value = 'Todos los campos son obligatorios'
-        esError.value = true
-      }
-    }
-
-    return {
-      nombre,
-      descripcion,
-      precio,
-      categoria,
-      archivoImagen,
-      previewImagen,
-      linkTienda,
-      mensaje,
-      esError,
-      crearProducto,
-      manejarImagen,
-    }
-  },
+    nombre.value = ''
+    descripcion.value = ''
+    precio.value = null
+    categoria.value = ''
+    archivoImagen.value = null
+    previewImagen.value = null
+    linkTienda.value = ''
+  } else {
+    mensaje.value = 'Todos los campos son obligatorios'
+    esError.value = true
+  }
 }
 </script>
 

@@ -75,8 +75,6 @@ export const useProductosStore = defineStore('productos', () => {
 
       registros.value = registrosApi
       productosPorTipo.value = agrupado
-
-      console.log('✅ Productos cargados en el store:', productosPorTipo.value)
     } catch (error) {
       console.error('Error al cargar productos:', error)
     }
