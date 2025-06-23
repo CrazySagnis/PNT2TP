@@ -9,8 +9,8 @@
 </template>
 
 <script setup>
-import Navbar from './components/navbar.vue'
-import Footer from './components/Footer.vue'
+import Navbar from '@/components/navbar.vue'
+import Footer from '@/components/Footer.vue'
 import { useProductosStore } from '@/stores/productosStore'
 import { onMounted } from 'vue'
 
