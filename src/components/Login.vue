@@ -149,7 +149,6 @@ function enviarRecuperacion() {
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
 
 .fondo-login {
-  background-image: url('@/assets/fondo.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
