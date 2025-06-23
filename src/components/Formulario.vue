@@ -170,7 +170,6 @@ function crearProducto() {
 @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@500;700&display=swap');
 
 .fondo-formulario {
-  background-image: url('@/assets/fondo.jpg');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
@@ -201,9 +200,6 @@ function crearProducto() {
 }
 
 .anuncio-hardware {
-  background-image:
-    linear-gradient(to bottom, rgba(31, 31, 43, 0.9), rgba(31, 31, 43, 0.9)),
-    url('@/assets/img/fotoPrueba.png');
   background-size: cover;
   background-position: center;
   background-repeat: no-repeat;
