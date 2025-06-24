@@ -98,9 +98,11 @@
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/usuarioStore'
+import { useCartStore } from '@/stores/cartStore'
 
 const router = useRouter()
 const store = useAuthStore()
+const cartStore = useCartStore()
 
 const usuario = ref('')
 const contrasena = ref('')
@@ -112,17 +114,18 @@ const mensajeRecupero = ref(false)
 
 function iniciarSesion() {
   const usuariosValidos = [
-    { usuario: 'admin', contrasena: 'admin', rol: 'admin' },
-    { usuario: 'usuario', contrasena: 'usuario', rol: 'limitado' },
-    { usuario: 'prueba', contrasena: 'prueba', rol: 'prueba' },
+    { usuario: 'admin', contrasena: 'admin', rol: 'admin', id: 'admin' },
+    { usuario: 'usuario', contrasena: 'usuario', rol: 'limitado', id: 'usuario' },
+    { usuario: 'prueba', contrasena: 'prueba', rol: 'prueba', id: 'prueba' },
   ]
 
   const encontrado = usuariosValidos.find(
-    (u) => u.usuario === usuario.value && u.contrasena === contrasena.value,
+    (u) => u.usuario === usuario.value && u.contrasena === contrasena.value
   )
 
   if (encontrado) {
     store.setUsuario(encontrado)
+    cartStore.cargarCarritoParaUsuario(encontrado.id)
     router.push('/home')
   } else {
     error.value = 'Usuario o contraseña incorrectos'

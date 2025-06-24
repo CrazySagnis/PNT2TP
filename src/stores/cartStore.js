@@ -4,9 +4,7 @@ import { useAuthStore } from './usuarioStore'
 
 export const useCartStore = defineStore('cartStore', () => {
   const authStore = useAuthStore()
-
   const userId = computed(() => authStore.usuario?.id || 'anonimo')
-
   const items = ref([])
 
   watchEffect(() => {
@@ -29,6 +27,11 @@ export const useCartStore = defineStore('cartStore', () => {
     localStorage.removeItem(`carrito-${userId.value}`)
   }
 
+  function cargarCarritoParaUsuario(nuevoUserId) {
+    const storedItems = localStorage.getItem(`carrito-${nuevoUserId}`)
+    items.value = storedItems ? JSON.parse(storedItems) : []
+  }
+
   watch(
     items,
     (newVal) => {
@@ -42,5 +45,6 @@ export const useCartStore = defineStore('cartStore', () => {
     agregarAlCarrito,
     removerDelCarrito,
     vaciarCarrito,
+    cargarCarritoParaUsuario,
   }
 })
