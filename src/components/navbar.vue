@@ -26,7 +26,7 @@ function seleccionarCategoria(categoria) {
 
 function cerrarSesion() {
   authStore.logout()
-  cartStore.vaciarCarrito()
+  //cartStore.vaciarCarrito()
   router.push('/login')
 }
 
