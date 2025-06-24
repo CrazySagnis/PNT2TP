@@ -8,7 +8,7 @@ export const useProductosStore = defineStore('productos', () => {
 
   const searchStore = useSearchStore()
 
-  const categoriaSeleccionada = ref('') // 🚀 cuál categoría está activa
+  const categoriaSeleccionada = ref('') 
 
   const grupoFiltrado = (grupo) => {
     const q = (searchStore.query || '').toLowerCase()
@@ -20,12 +20,11 @@ export const useProductosStore = defineStore('productos', () => {
     return Object.keys(productosPorTipo.value).length > 0
   })
 
-  // 🚀 Todas las categorías posibles (sin filtro)
   const categoriasDisponibles = computed(() => {
     return Object.keys(productosPorTipo.value)
   })
 
-  // 🚀 Categorías visibles (según búsqueda actual)
+
   const categoriasVisibles = computed(() => {
     const resultado = []
     for (const [tipo, grupo] of Object.entries(productosPorTipo.value)) {
@@ -37,7 +36,7 @@ export const useProductosStore = defineStore('productos', () => {
     return resultado
   })
 
-  // 🚀 Productos a mostrar en Home
+
   const productosFiltradosPorCategoria = computed(() => {
     const resultado = {}
     for (const [tipo, grupo] of Object.entries(productosPorTipo.value)) {
@@ -86,7 +85,7 @@ export const useProductosStore = defineStore('productos', () => {
     grupoFiltrado,
     productosFiltradosPorCategoria,
     categoriasDisponibles,
-    categoriasVisibles, // <--- agregado
+    categoriasVisibles,
     productosCargados,
     categoriaSeleccionada,
     cargarProductos,

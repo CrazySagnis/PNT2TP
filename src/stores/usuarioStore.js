@@ -28,7 +28,7 @@ export const useAuthStore = defineStore('auth', () => {
   function logout() {
     const cartStore = useCartStore()
 
-    cartStore.vaciarCarrito()
+    //cartStore.vaciarCarrito()
 
     usuario.value = null
     localStorage.removeItem('usuario')
