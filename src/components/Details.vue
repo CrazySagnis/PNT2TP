@@ -36,8 +36,7 @@
           </tbody>
         </table>
       </div>
-
-      <div class="mt-5" v-if="chartSeries[0].data.length > 0">
+      <div class="mt-5" v-if="chartSeries.length > 0 && chartSeries[0]?.data?.length > 0">
         <h4 class="fw-bold mb-3 text-center">Historial de Precios</h4>
         <apex-chart type="line" height="350" :options="chartOptions" :series="chartSeries" />
       </div>
