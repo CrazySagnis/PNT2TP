@@ -145,6 +145,6 @@ function agregarAlCarritoDesdeDetails(registro) {
     link: registro.link_producto,
   })
 
-  window.alert('✅ Producto añadido al carrito')
+  window.alert('Producto añadido al carrito')
 }
 </script>

@@ -5,11 +5,14 @@ import Details from '../components/Details.vue'
 import Cart from '@/components/Cart.vue'
 import Formulario from '../components/Formulario.vue'
 import Donaciones from '@/components/Donaciones.vue'
+import PanelBI from '@/components/Panelbi.vue'
 
 const routes = [
   { path: '/', redirect: '/login' },
   { path: '/login', component: Login },
   { path: '/home', component: Home },
+  { path: '/panel-bi', name: 'PanelBI', component: PanelBI },
+
   {
     path: '/details/:id',
     name: 'Details',
