@@ -37,7 +37,6 @@
         </table>
       </div>
 
-      <!-- GRÁFICO -->
       <div class="mt-5" v-if="chartSeries[0].data.length > 0">
         <h4 class="fw-bold mb-3 text-center">Historial de Precios</h4>
         <apex-chart type="line" height="350" :options="chartOptions" :series="chartSeries" />

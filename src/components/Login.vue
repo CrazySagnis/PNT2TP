@@ -4,7 +4,6 @@
       <div class="row justify-content-center">
         <div class="col-lg-10 rounded-4 p-0 shadow-lg overflow-hidden login-container">
           <div class="row g-0">
-            <!-- COLUMNA IZQUIERDA -->
             <div class="col-md-6 p-5 d-flex flex-column justify-content-between">
               <div>
                 <h3 class="text-center mb-4 titulo-login">Iniciar Sesión</h3>
@@ -77,7 +76,6 @@
               </div>
             </div>
 
-            <!-- COLUMNA DERECHA -->
             <div
               class="col-md-6 d-flex flex-column justify-content-center align-items-center p-4 text-white text-center anuncio-hardware"
             >

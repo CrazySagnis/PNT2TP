@@ -35,6 +35,10 @@ router.beforeEach(async (to, from, next) => {
   const { useAuthStore } = await import('../stores/usuarioStore')
   const authStore = useAuthStore()
 
+  if (to.path === '/login' && authStore.isAuthenticated) {
+    return next('/home')
+  }
+
   if (to.meta.requiereAccesoADetalle && (!authStore.usuario || !authStore.tieneAccesoADetalle())) {
     alert('Acceso denegado')
     return next('/home')

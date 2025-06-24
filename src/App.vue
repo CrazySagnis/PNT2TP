@@ -22,7 +22,6 @@ onMounted(() => {
 
 <style>
 body {
-  /* background-image: url('../src/assets/img/BackGroundImg.png'); */
   background-image: url('@/assets/img/BackGroundImg.png');
   background-size: cover;
   background-repeat: repeat;

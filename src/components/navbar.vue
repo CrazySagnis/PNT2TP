@@ -109,7 +109,6 @@ watchEffect(() => {
 
         <div v-else class="navbar-text text-light me-auto">Cargando categorías...</div>
 
-        <!-- 🔒 Ocultar botón carrito si el usuario es 'prueba' -->
         <div
           class="d-flex align-items-center me-3"
           v-if="authStore.usuario && authStore.usuario.rol !== 'prueba'"
@@ -127,7 +126,6 @@ watchEffect(() => {
         </div>
 
         <div class="d-flex gap-2 ms-3">
-          <!-- 🔒 Solo admin ve el botón Admin -->
           <button v-if="puedeVerBoton" class="btn btn-warning" @click="router.push('/formulario')">
             Cargar Producto
           </button>
