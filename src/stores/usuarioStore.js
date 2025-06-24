@@ -5,7 +5,6 @@ export const useAuthStore = defineStore('auth', () => {
   const usuario = ref(null)
   const isAuthenticated = computed(() => usuario.value !== null)
 
-  // Cargar usuario guardado
   try {
     const usuarioGuardado = JSON.parse(localStorage.getItem('usuario'))
     if (usuarioGuardado) {

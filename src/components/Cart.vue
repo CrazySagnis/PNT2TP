@@ -67,7 +67,6 @@
               ¿Querés ayudar a más michis?</em
             >
           </p>
-          <!-- Opciones de donación -->
           <div class="d-flex flex-wrap gap-2 mb-3">
             <button class="btn btn-warning fw-bold flex-fill" @click="donar(500)">
               Donar $500 🐾
@@ -86,7 +85,6 @@
             </button>
           </div>
 
-          <!-- Monto personalizado (aparece solo si se eligió "Otro monto") -->
           <div v-if="mostrarPersonalizado" class="input-group mb-2">
             <span class="input-group-text">$</span>
             <input
@@ -182,7 +180,6 @@ const totalAhorro = computed(() => {
   return totalSinAyuda.value - totalConAyuda.value
 })
 
-// Función para donar:
 async function donar(monto) {
   try {
     const response = await axios.post(

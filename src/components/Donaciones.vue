@@ -30,7 +30,7 @@ async function donar(monto) {
     )
 
     const initPoint = response.data.init_point
-    window.location.href = initPoint // redirige al checkout
+    window.location.href = initPoint
   } catch (error) {
     console.error('Error al generar preferencia', error)
     alert('Ocurrió un error, intentá más tarde')
