@@ -1,18 +1,24 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useCartStore } from './cartStore'
 
 export const useAuthStore = defineStore('auth', () => {
   const usuario = ref(null)
+
   const isAuthenticated = computed(() => usuario.value !== null)
 
-  try {
-    const usuarioGuardado = JSON.parse(localStorage.getItem('usuario'))
-    if (usuarioGuardado) {
-      usuario.value = usuarioGuardado
+  function cargarUsuarioGuardado() {
+    try {
+      const usuarioGuardado = JSON.parse(localStorage.getItem('usuario'))
+      if (usuarioGuardado) {
+        usuario.value = usuarioGuardado
+      }
+    } catch (e) {
+      usuario.value = null
     }
-  } catch (e) {
-    usuario.value = null
   }
+
+  cargarUsuarioGuardado()
 
   function setUsuario(usuarioData) {
     usuario.value = usuarioData
@@ -20,6 +26,10 @@ export const useAuthStore = defineStore('auth', () => {
   }
 
   function logout() {
+    const cartStore = useCartStore()
+
+    cartStore.vaciarCarrito()
+
     usuario.value = null
     localStorage.removeItem('usuario')
   }
@@ -31,7 +41,6 @@ export const useAuthStore = defineStore('auth', () => {
   function tieneAccesoACarrito() {
     return usuario.value && usuario.value.rol.trim() !== 'prueba'
   }
-
   return {
     usuario,
     isAuthenticated,
